@@ -1,0 +1,37 @@
+<div class="form-wraper">
+    <div class="form-container card">
+        <div class="form-body">
+        <form [formGroup]="this.loginForm" (ngSubmit)="onSubmit()" class="form-flex-container">
+                <mat-form-field hideRequiredMarker="true">
+                    <input formControlName="nationalId" placeholder="DNI" type="text" matInput required>
+                </mat-form-field>
+                <mat-form-field hideRequiredMarker="true">
+                    <input formControlName="password" placeholder="Contraseña" type="password" matInput required>
+                </mat-form-field>
+                <mat-error *ngIf="false">DNI o contraseña incorrecta</mat-error>
+
+                <button class="btn" mat-raised-button color="primary" type="submit"
+                    [disabled]="this.loginForm.invalid"> <mat-icon>input</mat-icon> Ingresar</button>
+                
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="container">
+            <div class="login">
+                <div class="login-triangle"></div>
+                <h2 class="login-header">Geapp</h2>
+                <form #frmLogin="ngForm" (ngSubmit)="onLogin(frmLogin)" class="login-container">
+                    <p><input name="nationalId" type="text" placeholder="DNI" ngModel required /></p>
+                    <p><input name="password" type="password" placeholder="Password" ngModel required/></p>
+                    <p><input type="submit" value="Ingresar" /></p>
+                </form>
+            </div>
+        </div> -->
+
+<!-- <md-input-container>
+    <input ngModel name="username" type="text" mdInput placeholder="DNI" required>
+    <md-hint>Dni sin puntos. Ej: 16458751</md-hint>
+    <md-error>El dni es requerido.</md-error>
+</md-input-container> -->

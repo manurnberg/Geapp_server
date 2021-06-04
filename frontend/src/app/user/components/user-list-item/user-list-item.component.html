@@ -1,0 +1,15 @@
+<div [ngClass]="setClasses()" >    
+    <div>
+        <span>
+            <!--this () means that this is an event in angular. -->
+            <input [(ngModel)]="user.approved" (change)="onToggle(user)" type="checkbox"/>
+        </span>
+        <span (click)="goToUserDetail(user)">
+            ({{ user.nationalId }}) 
+            {{ user.first }} 
+            {{ user.last }}
+            <!-- {{ user.phone }} -->
+        </span>
+        <!-- <button (click)="onDelete(user)" class="del">x</button> -->
+    </div>
+</div>

@@ -1,0 +1,177 @@
+/*
+http://www.carbonrider.com/2019/01/30/material-theme-with-angular-7-change-primary-and-accent-color/
+http://mcg.mbitson.com/#!?primary=%23717ed3&accent=%2340bef7
+#40bef7
+#717ed3
+*/
+
+@import '~@angular/material/theming';
+@include mat-core();
+$mat-myapp-primary: (
+    50 : #eef0fa,
+    100 : #d4d8f2,
+    200 : #b8bfe9,
+    300 : #9ca5e0,
+    400 : #8691da,
+    500 : #717ed3,
+    600 : #6976ce,
+    700 : #5e6bc8,
+    800 : #5461c2,
+    900 : #424eb7,
+    A100 : #ffffff,
+    A200 : #d8dcff,
+    A400 : #a5aeff,
+    A700 : #8b97ff,
+    contrast: (
+        50 : #ffffff,
+        100 : #ffffff,
+        200 : #ffffff,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #ffffff,
+        A200 : #ffffff,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+
+$mat-myapp-accent: (
+    50 : #e8f7fe,
+    100 : #c6ecfd,
+    200 : #a0dffb,
+    300 : #79d2f9,
+    400 : #5dc8f8,
+    500 : #40bef7,
+    600 : #3ab8f6,
+    700 : #32aff5,
+    800 : #2aa7f3,
+    900 : #1c99f1,
+    A100 : #ffffff,
+    A200 : #f2f9ff,
+    A400 : #bfe3ff,
+    A700 : #a6d8ff,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #000000,
+        800 : #000000,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$primary: mat-palette($mat-myapp-primary);
+$accent: mat-palette($mat-myapp-accent);
+
+$theme: mat-light-theme($primary, $accent);
+@include angular-material-theme($theme);
+//@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+/*------------------------------------------*/
+
+div.container{
+    margin: 0px 10px;
+}
+
+.fill-remaining-space{
+    flex: 1 1 auto;
+}
+
+.example-icon {
+    padding: 0 14px;
+  }
+
+form.normal-form{
+    margin: 10px;
+}
+
+.controls-container{
+    width: 100%;
+    padding: 5%;
+}
+
+.controls-container > * {
+    width: 100%;
+}
+
+.add-bottom-padding{
+    padding-bottom: 10px;
+}
+
+mat-radio-group mat-radio-button{
+    margin-left: 5px;
+}
+
+.button-row button{
+    margin: 5px;
+}
+
+/* notification */
+snack-bar-container.success {
+    background-color: #5cb85c;
+    color : #fff;
+  }
+
+
+  snack-bar-container.notification simple-snack-bar{
+    font-size: 18px !important;
+    font-weight: bold;
+  }
+
+ 
+  .hide{
+    display: none;
+}
+
+/* mat-table */
+mat-footer-row mat-footer-cell{
+    justify-content: center;
+    font-style: italic;
+}
+
+/* filter controls */
+.search-div{
+    margin: 10px 0px;
+}
+      
+.search-form-field{
+          width: 60%;
+          margin-left: 10px;
+          padding: 5px 10px;
+          background-color: #f5f5f5;
+          border-radius: 5px;
+          }
+
+.search-form-field div.mat-form-field-underline {
+              display: none;
+          }
+.search-form-field div.mat-form-field-infix{
+              border-top: 0px;
+          }
+.search-form-field div.mat-form-field-wrapper{
+            padding-bottom: 0px;
+        }
+.search-form-field div.mat-form-field-suffix button{
+            height: 32px;
+            width: 32px;
+        }
+
+.btn-dialog-close{
+    width: 45px;
+    min-width: 0px !important;
+    height: 40px;
+    padding: 0px !important;
+}

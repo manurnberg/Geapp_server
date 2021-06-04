@@ -1,0 +1,48 @@
+{
+  "development": {
+    "jwtsecret": "ABCDEFGHIJK0123456789",
+    "username": "root",
+    "password": "cacorucho",
+    "database": "geapp_2",
+    "host": "MacBook-Pro-de-Matias.local",
+    "dialect": "mysql",
+    "pool":{
+      "max":5,
+      "min":0,
+      "acquire":30000, 
+      "idle":10000
+    }
+  },
+  "test": {
+    "jwtsecret": "ABCDEFGHIJK0123456789",
+    "filepath": "/home/ec2-user/geapp/files/test",
+    "username": "geapp_test",
+    "password": "geapp_TEST_2019",
+    "database": "geapp_test",
+    "host": "localhost",
+    "dialect": "mysql",
+    "operatorsAliases": 0,
+    "pool":{
+      "max":5,
+      "min":0,
+      "acquire":30000, 
+      "idle":10000
+    }
+  },
+  "production": {
+    "jwtsecret": "AOG91949KKASOQPWR05912KD0AKSLFOBJ",
+    "filepath": "/home/ec2-user/geapp/files/prod",
+    "username": "geapp_prod",
+    "password": "SCPLgeapp1234", 
+    "database": "geapp_prod",
+    "host": "localhost",
+    "dialect": "mysql",
+    "operatorsAliases": 0, 
+    "pool":{
+      "max":5,
+      "min":0,
+      "acquire":30000, 
+      "idle":10000
+    }
+  }
+}

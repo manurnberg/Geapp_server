@@ -1,0 +1,6 @@
+<!--ngSubmit -> this is the event to call when submit the form. 
+ ngModel -> maps to the property in the ts. -->
+ <form class="form" (ngSubmit)="onSubmit()">
+    <input type="text" name="filterText" [(ngModel)]="filterText" placeholder="Filtrar por DNI...">
+    <input type="submit" value="Filtrar" class="btn">
+</form>

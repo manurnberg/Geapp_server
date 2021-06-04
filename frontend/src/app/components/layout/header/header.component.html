@@ -1,0 +1,24 @@
+<mat-toolbar color="primary">
+    <!-- <span class="fill-remaining-space"></span> -->
+    <span>GEAPP</span>
+    <span class="fill-remaining-space"></span>
+    <a mat-button routerLink="/tyc">Terminos y condiciones</a>
+    <a mat-button *ngIf="isAuthenticated()" routerLink="/users">Usuarios</a>
+    <a mat-button *ngIf="isAuthenticated()" (click)="logout()">Salir</a>
+    <a mat-button *ngIf="!isAuthenticated()" routerLink="/auth/login">Ingresar</a>
+</mat-toolbar>
+
+<!-- 
+<nav class="nav-extended">
+    <div class="nav-wrapper">
+        <a href="#" class="brand-logo">GEAPP</a>
+        <ul *ngIf="isAuthenticated()" id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a routerLink="/users">Usuarios</a></li>
+            <li><a routerLinl="/tyc">Terminos y Conds.</a></li>
+            <li><a (clikc)="logout()" style="cursor:pointer;">Logout</a></li>
+        </ul>
+        <ul *ngIf="!isAuthenticated()" id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a routerLink="/auth/login">Login</a></li>
+        </ul>
+    </div>
+</nav> -->

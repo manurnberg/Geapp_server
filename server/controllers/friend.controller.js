@@ -1,0 +1,79 @@
+const Friend = require('../models/friend');
+const Citizen = require('../models/citizen');
+const friendController = {};
+
+friendController.getFriends = async (req, res, next) =>{
+    try{
+        console.log(`Get Friends for userId: ${req.payload.id}`);
+
+        const friends = await Friend.findAll({
+            where:{"userId": req.payload.id},
+            include:[Citizen]
+        }); 
+        
+        res.json(friends);
+    }catch(e){
+        next(e);
+    }
+};
+
+friendController.addFriend = async (req, res, next)=>{
+    try{
+        const nationalId = req.body.nationalId;
+        const userId = req.payload.id;
+
+        console.log(`Add Friend: DNI:${nationalId} and userId:${userId}`);
+
+        if(!nationalId || nationalId.trim()==''){
+            const err = Error('DNI Obligatorio'); err.status=422;
+            throw err;
+            //return res.status(422).json({errors: {nationaId: "DNI obligatorio"}});
+        }
+
+        const citizen = await Citizen.findOne({where: {"nationalId":nationalId}});
+        if(!citizen){
+            const err = Error('No encontrado en padrón.'); err.status = 422;
+            throw err;
+        }
+        
+        let friend = await Friend.findOne({where: {"userId":userId, "citizenId":citizen.id}});
+        if(!friend){
+            friend = new Friend(); 
+            friend.phone = req.body.phone;
+            friend.email = req.body.email;
+            friend.userId = userId;
+            friend.citizenId = citizen.id;            
+            await friend.save(); //it modifies the friend.
+        }else{
+            //console.log('Friend already exists.');
+            const err = Error('Amigo existente.'); err.status = 422;
+            throw err;
+        }
+        
+        //call again to include citizen.
+        friend = await Friend.findOne({
+            where: {"userId":userId, "citizenId":citizen.id},
+            include:[Citizen]
+            });
+
+        //console.log(friend);
+        res.json(friend);
+    }catch(e){ 
+        next(e);
+    }
+};
+
+friendController.deleteFriend = async (req, res, next)=>{
+    try{
+        const friendId = req.params.id;
+        console.log(`Delete Friend: Friend Id:${friendId} and userId:${req.payload.id}`);
+
+        const d = await Friend.destroy({where: {"id": friendId, "userId":req.payload.id}});
+        
+        res.json({message: 'Amigo eliminado'});
+    }catch(e){
+        next(e);
+    }
+};
+
+module.exports = friendController;
