@@ -3,6 +3,7 @@ const Citizen = require('../models/citizen');
 const Config = require('../models/config');
 const Sequelize = require('../models').Sequelize;
 const passport = require('passport');
+const epassport = require('../config/epassport');
 const passwordChecker = require('../utils/password-check');
 const userController = {};
 
@@ -96,10 +97,13 @@ userController.editUser = async (req, res, next) => {
 };
 
 userController.login = async (req, res, next) => {
+    console.log("dni request",req.body.nationalId)
+    console.log("pass", req.body.password)
     try {
 
         if (!req.body.nationalId || !req.body.password || req.body.nationalId.trim() == '') {
             //return res.status(422).json({errors: {email: "can't be blank"}});
+
             const err = Error('DNI o contraseña en blanco.'); err.status = 422;
             throw err;
         }
@@ -113,6 +117,40 @@ userController.login = async (req, res, next) => {
 
             user.token = user.generateJWT();
             return res.json(user.toAuthJSON());
+        })(req, res, next);
+    } catch (e) {
+        next(e);
+    }
+
+};
+
+userController.eLogin = async (req, res, next) => {
+    console.log("dni request",req.body.email)
+    console.log("pass", req.body.password)
+    try {
+
+        if (!req.body.email || !req.body.password || req.body.email.trim() == '') {
+            //return res.status(422).json({errors: {email: "can't be blank"}});
+
+            const err = Error('Email o contraseña en blanco.'); err.status = 422;
+            throw err;
+        }
+        console.log("pass y contrasenia nos son vacios")
+
+        passport.authenticate('local', { session: false }, (err, user, info) => {
+            if (err) { 
+                console.log("error passport", err)
+                return next(err); }
+
+            if (!user) {
+                console.log("error no user exist")
+                return res.status(422).json(info);
+            }
+
+            console.log("a generar token")
+
+            user.token = user.generateJWT2();
+            return res.json(user.toAuthJSON2());
         })(req, res, next);
     } catch (e) {
         next(e);

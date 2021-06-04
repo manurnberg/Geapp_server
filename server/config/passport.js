@@ -9,8 +9,10 @@ passport.use(new LocalStrategy({
   usernameField: 'nationalId',
   passwordField: 'password'
 }, async (nationalId, password, done) => {
+  console.log("pasa dentro de passport.js ")
   try {
     const user = await User.findOne({ where: { "nationalId": nationalId } });
+    
     if (!user || !user.validPassword(password)) {
       return done(null, false, { errors: { 'message': 'DNI o contraseña incorrecta.' } });
     }
