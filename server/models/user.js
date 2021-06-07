@@ -18,7 +18,8 @@ class User extends Sequelize.Model {
   setPassword = function (password) {
     console.log("Set password--->>>", password)
     this.salt = crypto.randomBytes(16).toString('hex');
-    this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 256, 'sha256').toString('hex');
+    this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 256, 'sha256').toString('hex')
+    this.password = '';
   };
   
   generateJWT = function () {

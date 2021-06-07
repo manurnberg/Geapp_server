@@ -8,7 +8,7 @@ friendController.getFriends = async (req, res, next) =>{
 
         const friends = await Friend.findAll({
             where:{"userId": req.payload.id},
-            include:[Citizen]
+            //include:[Citizen]
         }); 
         
         res.json(friends);
@@ -57,6 +57,54 @@ friendController.addFriend = async (req, res, next)=>{
             });
 
         //console.log(friend);
+        res.json(friend);
+    }catch(e){ 
+        next(e);
+    }
+};
+
+friendController.addiosFriend = async (req, res, next)=>{
+    try{
+        const email = req.body.email;
+        const userId = req.payload.id;
+
+        console.log(`Add Friend: email:${email} and userId:${userId}`);
+
+        if(!email || email.trim()==''){
+            const err = Error('email Obligatorio'); err.status=422;
+            throw err;
+            //return res.status(422).json({errors: {nationaId: "DNI obligatorio"}});
+        }
+
+        // const citizen = await Citizen.findOne({where: {"nationalId":nationalId}});
+        // if(!citizen){
+        //     const err = Error('No encontrado en padrón.'); err.status = 422;
+        //     throw err;
+        // }
+        
+        let friend = await Friend.findOne({where: {"userId":userId, "email":email}});
+        if(!friend){
+            friend = new Friend(); 
+            friend.phone = req.body.phone;
+            friend.email = req.body.email;
+            friend.name = req.body.name;
+            friend.last_name = req.body.last_name;
+            friend.userId = userId;
+            //friend.citizenId = citizen.id;            
+            await friend.save(); //it modifies the friend.
+        }else{
+            //console.log('Friend already exists.');
+            const err = Error('Amigo existente.'); err.status = 422;
+            throw err;
+        }
+        
+        //call again to include citizen.
+        // friend = await Friend.findOne({
+        //     where: {"userId":userId, "citizenId":citizen.id},
+        //     include:[Citizen]
+        //     });
+
+        console.log(friend);
         res.json(friend);
     }catch(e){ 
         next(e);

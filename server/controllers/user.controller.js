@@ -6,6 +6,7 @@ const passport = require('passport');
 const epassport = require('../config/epassport');
 const passwordChecker = require('../utils/password-check');
 const userController = {};
+const nodemailer = require('nodemailer')
 
 
 userController.getUsers = async (req, res, next) => {
@@ -123,7 +124,7 @@ userController.login = async (req, res, next) => {
     }
 
 };
-
+// api email login for ios app
 userController.eLogin = async (req, res, next) => {
     console.log("dni request",req.body.email)
     console.log("pass", req.body.password)
@@ -157,7 +158,7 @@ userController.eLogin = async (req, res, next) => {
     }
 
 };
-
+// api user register for ios app
 userController.addUser = async (req, res, next) => {
     try {
         const email = req.body.email;
@@ -192,13 +193,19 @@ userController.addUser = async (req, res, next) => {
         user.email = email;
         user.helpPhone = (config) ? config.value : '+5411111111';
         user.approved = true;
+        
 
         //passwordChecker.checkPassword(password);
         user.setPassword(password);
+        
+        
+        
 
         await user.save();
         //throw Error('s'); //TO TEST
-
+        
+       
+        createTransporter()
         res.json(user.toAuthJSON2());
     } catch (e) {
         if (e.name == 'ValidationError') {
@@ -277,5 +284,35 @@ userController.deleteUser = async (req, res) => {
 
     res.json({ 'message': 'Usuario eliminado.(dummy)' });
 };
+
+function createTransporter(){
+    var transporter = nodemailer.createTransport({
+        host:'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth:{
+            user:'bill.nolan@ethereal.email',
+            pass: 'C3pdXWDbjyJREXrCTw'
+        }
+
+    })
+
+    var mailOptions = {
+        from: 'Geapp ahutenticacion',
+        to:'manurnbergy@gmail.com',
+        subject:'Este es un mail de verificacion de usuario',
+        text:'Gracias por registrarse en Geapp'
+    }
+
+    transporter.sendMail(mailOptions, (error,info) => {
+
+        if(error){
+            console.log("ERROR", error.message)
+        }else{
+            console.log("MENSAJE ENVIADO")
+        }
+
+    });
+}
 
 module.exports = userController;

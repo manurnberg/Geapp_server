@@ -31,7 +31,7 @@ var auth = {
         secret: config.jwtsecret,
         userProperty: 'payload',
         getToken: getTokenFromHeader,
-        isRevoked: isRevokedCallback
+       // isRevoked: isRevokedCallback
     }),
     optional: jwt({
         secret: config.jwtsecret,
@@ -40,6 +40,11 @@ var auth = {
         getToken: getTokenFromHeader
     })
 };
+
+
+
+
+
 
 const verifyApproved = async(req, res, next) => {
     //const token = req.header('Authorization').replace('Bearer ', '')
