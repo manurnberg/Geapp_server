@@ -2,7 +2,7 @@
 
 ## addiosFriend
 
-## url: /add_ios_friend
+## url: /friend/add_ios_friend
 ## method: POST
 
 ## params:
