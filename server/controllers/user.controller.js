@@ -287,19 +287,19 @@ userController.deleteUser = async (req, res) => {
 
 function createTransporter(){
     var transporter = nodemailer.createTransport({
-        host:'smtp.ethereal.email',
+        host:'smtp.gmail.com',
         port: 587,
         secure: false,
         auth:{
-            user:'bill.nolan@ethereal.email',
-            pass: 'C3pdXWDbjyJREXrCTw'
+            user:'manurnbergy@gmail.com',
+            pass: 'cacorucho1266APU'
         }
 
     })
 
     var mailOptions = {
-        from: 'Geapp ahutenticacion',
-        to:'manurnbergy@gmail.com',
+        from:'Geapp <autenticacion@geapp.com',
+        to:'debra.grimbeek@gmail.com',
         subject:'Este es un mail de verificacion de usuario',
         text:'Gracias por registrarse en Geapp'
     }
