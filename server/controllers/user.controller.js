@@ -205,7 +205,7 @@ userController.addUser = async (req, res, next) => {
         //throw Error('s'); //TO TEST
         
        
-        createTransporter()
+        createTransporter(user.email)
         res.json(user.toAuthJSON2());
     } catch (e) {
         if (e.name == 'ValidationError') {
@@ -285,21 +285,21 @@ userController.deleteUser = async (req, res) => {
     res.json({ 'message': 'Usuario eliminado.(dummy)' });
 };
 
-function createTransporter(){
+function createTransporter(user_email){
     var transporter = nodemailer.createTransport({
-        host:'smtp.gmail.com',
+        host:'smtpout.secureserver.net',
         port: 587,
         secure: false,
         auth:{
-            user:'manurnbergy@gmail.com',
-            pass: 'cacorucho1266APU'
+            user:'geapp@coinpasrl.net',
+            pass: 'xsw2zaq1_'
         }
 
     })
 
     var mailOptions = {
         from:'Geapp <autenticacion@geapp.com',
-        to:'debra.grimbeek@gmail.com',
+        to: user_email,
         subject:'Este es un mail de verificacion de usuario',
         text:'Gracias por registrarse en Geapp'
     }

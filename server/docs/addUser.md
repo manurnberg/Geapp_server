@@ -2,7 +2,7 @@
 
 ## addUser 
 
-## url: /user/addUser
+## url: user/addUser
 ## method: POST
 
 ## params:
