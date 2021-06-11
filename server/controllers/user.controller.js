@@ -301,7 +301,10 @@ function createTransporter(user_email){
         from:'Geapp <autenticacion@geapp.com',
         to: user_email,
         subject:'Este es un mail de verificacion de usuario',
-        text:'Gracias por registrarse en Geapp'
+        text:'Gracias por registrarse en Geapp',
+        html: `<p>Bienvenido a la comunidad de Geapp</p>`,
+
+        
     }
 
     transporter.sendMail(mailOptions, (error,info) => {
