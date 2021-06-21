@@ -2,8 +2,9 @@ const User = require('../models/user');
 const Citizen = require('../models/citizen');
 const Config = require('../models/config');
 const Sequelize = require('../models').Sequelize;
-const passport = require('passport');
-const epassport = require('../config/epassport');
+
+
+
 const passwordChecker = require('../utils/password-check');
 const userController = {};
 const nodemailer = require('nodemailer')
@@ -91,7 +92,7 @@ userController.editUser = async (req, res, next) => {
 
         await userToEdit.save(fieldsObj);
 
-        res.json({ status: 'Usuario actualizado correctamente.' });
+        res.json({ status: 'Usuario actualizado correctamente.'});
     } catch (e) {
         next(e);
     }
@@ -105,14 +106,15 @@ userController.login = async (req, res, next) => {
         if (!req.body.nationalId || !req.body.password || req.body.nationalId.trim() == '') {
             //return res.status(422).json({errors: {email: "can't be blank"}});
 
-            const err = Error('DNI o contraseña en blanco.'); err.status = 422;
+            const err = Error('DNI o contraseña en blanco prueba.'); err.status = 422;
             throw err;
         }
-
-        passport.authenticate('local', { session: false }, (err, user, info) => {
+        const passport = require('passport');
+        passport.authenticate('login', { session: false }, (err, user, info) => {
             if (err) { return next(err); }
 
             if (!user) {
+                console.log("error--->>>",res.status(422))
                 return res.status(422).json(info);
             }
 
@@ -137,8 +139,8 @@ userController.eLogin = async (req, res, next) => {
             throw err;
         }
         console.log("pass y contrasenia nos son vacios")
-
-        passport.authenticate('local', { session: false }, (err, user, info) => {
+        const passport = require('passport');
+        passport.authenticate('elogin', { session: false }, (err, user, info) => {
             if (err) { 
                 console.log("error passport", err)
                 return next(err); }
@@ -147,6 +149,8 @@ userController.eLogin = async (req, res, next) => {
                 console.log("error no user exist")
                 return res.status(422).json(info);
             }
+        
+        
 
             console.log("a generar token")
 
