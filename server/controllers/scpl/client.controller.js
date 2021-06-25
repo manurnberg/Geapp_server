@@ -43,6 +43,21 @@ clientController.fetchClient = async (req, res, next) => {
     }
 };
 
+clientController.fetchClientByPartnerNumber = async (req, res, next) => {
+    
+    try{
+        const clientPartner   = parseInt(req.body.partner);
+        console.log("cliente socio -->>>>", clientPartner)
+        const client    = await Client.findOne({where:{ "partner": clientPartner}});
+
+        if(!client) return res.sendStatus(401);
+        return res.json(client);
+
+    } catch(e) {
+        next(e);
+    }
+};
+
 clientController.editAvalClient = async (req, res, next) => {
     try{
         const clientId      = req.params.id;
