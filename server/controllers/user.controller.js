@@ -2,6 +2,8 @@ const User = require('../models/user');
 const Citizen = require('../models/citizen');
 const Config = require('../models/config');
 const Sequelize = require('../models').Sequelize;
+const Voter = require('../models/voter');
+const VotingTable = require('../models/voting-table');
 
 
 
@@ -19,7 +21,7 @@ userController.getUsers = async (req, res, next) => {
 
         const usersAndCount = await User.findAndCountAll(
             {
-                attributes: ['id', 'nationalId', 'first', 'last', 'email', 'phone', 'helpPhone', 'role', 'approved', 'createdAt'],
+                attributes: ['id', 'nationalId', 'first', 'last', 'email', 'phone', 'helpPhone', 'role', 'approved','fiscal','table', 'createdAt'],
                 where: {
                     [Sequelize.Op.or]: [
                         { nationalId: { [Sequelize.Op.like]: `${filter}%` } },
@@ -51,6 +53,21 @@ userController.getUser = async (req, res, next) => {
 
         const user = await User.findOne({ where: { "id": userId } });
         if (!user) return res.sendStatus(401);
+
+        const usersVotingTable = await VotingTable.findOne(
+            { include: [{ 
+                model: Voter, 
+                include: [
+                    { model: Citizen, 
+                        where: { "nationalId": req.payload.nationalId } 
+                    }] 
+                }] 
+            });
+        if(usersVotingTable){
+            console.log("User voting table", usersVotingTable)
+        }
+        
+
         return res.json(user.toAuthJSON());
     } catch (e) {
         next(e);
@@ -60,10 +77,14 @@ userController.getUser = async (req, res, next) => {
 userController.editUser = async (req, res, next) => {
     try {
         const userRole = req.payload.role;
-        //const nationalId = req.body.nationalId;
+        const nationalId = req.body.nationalId;
         const userId = req.params.id;
         const password = req.body.password;
         const approved = req.body.approved;
+        const fiscal = req.body.fiscal;
+        
+
+        
 
         console.log(`Edit user: ${userId} - who is editing?:${req.payload.id}`);
 
@@ -79,20 +100,70 @@ userController.editUser = async (req, res, next) => {
             throw err;
         }
 
+        const userByid = await User.findOne({
+            where: {'id':userId}
+        })
+
+        const userCitizen = await Citizen.findOne({
+            where: { "nationalId": userByid.nationalId },
+            // include: [{model: Voter, where: { "isOwner": true },
+            //   include: [{model: VotingTable, where: { "isOpen": true }
+            //   }]
+            // }]
+          });
+      
+          console.log("User citizen-->>", userCitizen.id)
+      
+          const userVotingTableId = await Voter.findOne({
+            where: {'citizenId': userCitizen.id},
+          });
+      
+          console.log("user voting table id  --->>" ,userVotingTableId.votingtableId.toString())
+          const vtId = userVotingTableId.votingtableId;
+      
+          const userVTable = await VotingTable.findOne({
+            where: {'table': vtId},
+          });
+
+          console.log("user voting table table-->", userVTable.table);
+
+
+
         //passwordChecker.checkPassword(password);
         let fieldsObj = { fields: ['approved'] };
         if (approved !== undefined) {
             userToEdit.approved = approved;
         }
+         
+        if (fiscal !== undefined && fiscal !== false) {
+            userToEdit.fiscal = fiscal;
+            userToEdit.table = userVTable.table
+            fieldsObj = {fields: ['fiscal','table']}
+
+
+        }
+        if(fiscal == false){ 
+            userToEdit.fiscal = null;
+            userToEdit.table = null
+            fieldsObj = {fields: ['fiscal','table']}
+        }
 
         if (password !== undefined) {
             userToEdit.setPassword(password);
-            fieldsObj = { fields: ['salt', 'hash', 'approved'] };
+            fieldsObj = { fields: ['salt', 'hash', 'approved', 'fiscal', 'table'] };
         }
 
         await userToEdit.save(fieldsObj);
+        const status = { status: 'Usuario actualizado correctamente.'};
+        const table = {'nationalId':userByid.nationalId,'table': userVTable.table};
+        console.log("table print--->>", table)
 
-        res.json({ status: 'Usuario actualizado correctamente.'});
+        const response = Object.assign(status,table)
+
+        console.log("response from edit -->>", response)
+
+        // res.json({ status: 'Usuario actualizado correctamente.'});
+        return res.json(response);
     } catch (e) {
         next(e);
     }
@@ -117,9 +188,19 @@ userController.login = async (req, res, next) => {
                 console.log("error--->>>",res.status(422))
                 return res.status(422).json(info);
             }
+            console.log("inside info", info.votingTable);
 
-            user.token = user.generateJWT();
-            return res.json(user.toAuthJSON());
+            
+            
+            const tableInfo = info.votingTable;
+            const userToJson = user.toAuthJSON();
+            
+
+            const mergeObject = Object.assign(userToJson,tableInfo);
+            console.log("usr to json merge", mergeObject);
+            
+            user.token = user.generateJWT();  
+            return res.json(mergeObject);
         })(req, res, next);
     } catch (e) {
         next(e);
@@ -190,9 +271,9 @@ userController.addUser = async (req, res, next) => {
         const config = await Config.findOne({ where: { "code": "DEFAULT_HELP_PHONE" } });
 
         const user = new User();
-        //user.nationalId = nationalId;
-        //user.first = citizen.first;
-        //user.last = citizen.last;
+        // user.nationalId = nationalId;
+        // user.first = citizen.first;
+        // user.last = citizen.last;
         user.phone = phone;
         user.email = email;
         user.helpPhone = (config) ? config.value : '+5411111111';

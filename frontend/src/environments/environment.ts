@@ -4,11 +4,12 @@
 
 export const environment = {
   production: false,
-  baseUrl:'http://api.geapp.com.ar:3000'
-};
-/*
+ // baseUrl:'http://api.geapp.com.ar:3000'
+
 baseUrl:'http://localhost:3000'
-*/
+
+};
+
 
 
 /*

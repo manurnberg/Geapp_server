@@ -60,6 +60,8 @@ class User extends Sequelize.Model {
       email: this.email,
       phone: this.phone,
       role: this.role,
+      fiscal: this.fiscal,
+      table: this.table,
       approved: this.approved,
       isOwner: this.isOwner,
       token: this.generateJWT()
@@ -78,6 +80,7 @@ class User extends Sequelize.Model {
       phone: this.phone,
       role: this.role,
       approved: this.approved,
+      fiscal: this.fiscal,
       isOwner: this.isOwner,
       token: this.generateJWT2()
     };
@@ -95,8 +98,10 @@ User.init({
   helpPhone: {type: Sequelize.STRING, allowNull:true},
   role: {type: Sequelize.STRING, allowNull: false, defaultValue: 'USER'},
   approved: { type: Sequelize.BOOLEAN, allowNull:false, defaultValue: true },
+  table: {type: Sequelize.STRING, allowNull:true},
+  fiscal: {type: Sequelize.BOOLEAN, allowNull:true, defaultValue: false},
   hash: {type: Sequelize.STRING(550), allowNull:false},
-  salt: {type: Sequelize.STRING, allowNull: false}
+  salt: {type: Sequelize.STRING, allowNull: false},
 }, {
   sequelize,
   //paranoid: true,

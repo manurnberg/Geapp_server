@@ -1,64 +1,67 @@
 <div>
-    <mat-toolbar >
-        <span> {{ userService.form.controls['id'].value?"Editar usuario":"Crear usuario" }}</span>
-        <span class="fill-remaining-space"></span>
-        <button class="btn-dialog-close" mat-stroked-button (click)="onClose()" tabIndex="-1">
-            <mat-icon>clear</mat-icon>
-        </button>
-    </mat-toolbar>
-    <form [formGroup]="userService.form" class="normal-form" (ngSubmit)="onSubmit()">
-        <mat-grid-list cols="2" rowHeight="300px">
-            <mat-grid-tile>
-                <div class="controls-container">
-                    <input type="hidden" formControlName="id">
-                    <mat-form-field>
-                        <input formControlName="nationalId" placeholder="DNI" matInput>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <input formControlName="first" placeholder="Nombre" matInput>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <input formControlName="last" placeholder="Apellido" matInput>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <input formControlName="email" placeholder="Correo" matInput>
-                    </mat-form-field>
-                </div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="controls-container">
-                    <!-- <div class="add-bottom-padding"></div> -->
-                    <mat-form-field>
-                        <input formControlName="phone" placeholder="Teléfono" matInput>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <input formControlName="role" placeholder="Rol" matInput>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <input formControlName="password" placeholder="Nueva contraseña"
-                            type="text" matInput>
-                        <!-- it's commented because when toggle submits the form.-->
-                        <!--input formControlName="password" placeholder="Nueva contraseña"
+  <mat-toolbar>
+    <span> {{ userService.form.controls['id'].value?"Editar usuario":"Crear usuario" }}</span>
+    <span class="fill-remaining-space"></span>
+    <button class="btn-dialog-close" mat-stroked-button (click)="onClose()" tabIndex="-1">
+      <mat-icon>clear</mat-icon>
+    </button>
+  </mat-toolbar>
+  <form [formGroup]="userService.form" class="normal-form" (ngSubmit)="onSubmit()">
+    <mat-grid-list cols="2" rowHeight="300px">
+      <mat-grid-tile>
+        <div class="controls-container">
+          <input type="hidden" formControlName="id">
+          <mat-form-field>
+            <input formControlName="nationalId" placeholder="DNI" matInput>
+          </mat-form-field>
+          <mat-form-field>
+            <input formControlName="first" placeholder="Nombre" matInput>
+          </mat-form-field>
+          <mat-form-field>
+            <input formControlName="last" placeholder="Apellido" matInput>
+          </mat-form-field>
+          <mat-form-field>
+            <input formControlName="email" placeholder="Correo" matInput>
+          </mat-form-field>
+        </div>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <div class="controls-container">
+          <!-- <div class="add-bottom-padding"></div> -->
+          <mat-form-field>
+            <input formControlName="phone" placeholder="Teléfono" matInput>
+          </mat-form-field>
+          <mat-form-field>
+            <input formControlName="role" placeholder="Rol" matInput>
+          </mat-form-field>
+          <mat-form-field>
+            <input formControlName="password" placeholder="Nueva contraseña" type="text" matInput>
+            <!-- it's commented because when toggle submits the form.-->
+            <!--input formControlName="password" placeholder="Nueva contraseña"
                             [type]="hide ? 'password' : 'text'" matInput>
                         <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
                             [attr.aria-pressed]="hide">
                             <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                        </button-->
-                    </mat-form-field>
-                    <div class="add-bottom-padding">
-                        <mat-checkbox formControlName="approved" color="primary">Habilitado</mat-checkbox>
-                    </div>
-                    <div class="button-row">
-                        <button mat-raised-button color="primary" type="submit"
-                            [disabled]="userService.form.invalid">Guardar</button>
-                        <!-- <button mat-raised-button color="warn" (click)="onClear()">Clear</button> -->
-                    </div>
-                </div>
-            </mat-grid-tile>
-        </mat-grid-list>
-    </form>
+                        </button>-->
 
-    <!-- <div>
+          </mat-form-field>
+          <div class="add-bottom-padding">
+            <mat-checkbox formControlName="approved" color="primary">Habilitado</mat-checkbox>
+          </div>
+          <div class="add-bottom-padding">
+            <mat-checkbox formControlName="fiscal" color="primary">Usuario Fiscal</mat-checkbox>
+          </div>
+          <div class="button-row">
+            <button mat-raised-button color="primary" type="submit"
+              [disabled]="userService.form.invalid">Guardar</button>
+            <!-- <button mat-raised-button color="warn" (click)="onClear()">Clear</button> -->
+          </div>
+        </div>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </form>
+
+  <!-- <div>
     <form (ngSubmit)="onSubmit()">
         <div>Id: {{ user?.id }}</div>
         <div>DNI: {{ user?.nationalId }}</div>

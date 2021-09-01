@@ -5,6 +5,8 @@ const Citizen = require('../models/citizen');
 const Voter = require('../models/voter');
 const VotingTable = require('../models/voting-table');
 
+
+
 passport.use('login',new LocalStrategy({
   usernameField: 'nationalId',
   passwordField: 'password'
@@ -28,12 +30,35 @@ passport.use('login',new LocalStrategy({
       }]
     });
 
+    console.log("User citizen-->>", userCitizen.id)
+
+    const userVotingTableId = await Voter.findOne({
+      where: {'citizenId': userCitizen.id},
+    });
+
+    console.log("user voting table id  --->>" ,userVotingTableId.votingtableId.toString())
+    const vtId = userVotingTableId.votingtableId;
+
+    const userVTable = await VotingTable.findOne({
+      where: {'table': vtId},
+    });
+
+    console.log("user voting table--->>", userVTable)
+
+
+
     user.isOwner=false;
     if(userCitizen){
       user.isOwner=true;
+     
+      console.log("user is owner")
+      
+   
     }
 
-    return done(null, user);
+    //console.log("USER-->>", user)
+
+    return done(null, user, {votingTable : {'vtable': userVTable.table}});
   } catch (e) {
     console.log('error en login-passport:' + e);
     done(null, false, { errors: { 'message': 'Error en login.' } });
@@ -76,3 +101,4 @@ passport.use('elogin',new LocalStrategy({
   }
 
 }));
+

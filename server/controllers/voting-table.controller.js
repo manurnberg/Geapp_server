@@ -58,6 +58,48 @@ votingTableController.getVotingTable = async (req, res, next) => {
     }
 };
 
+// votingTableController.getUserVotingTable = async (req, res, next) => {
+//     try {
+//         console.log("Voting Table for DNI: " + req.body.nationalId);
+//         //need to find the voting table with its voters and citizens for the voting table where the user in session belongs to.
+//         //maybe this is not the best approach.
+//         const usersVotingTable = await VotingTable.findOne(
+//             { include: [{ 
+//                 model: Voter, 
+//                 include: [
+//                     { model: Citizen, 
+//                         where: { "nationalId": req.body.nationalId } 
+//                     }] 
+//                 }] 
+//             });
+
+//             if(!usersVotingTable){
+//                 const err = Error('Mesa no encontrada.'); err.status = 422;
+//                 throw err;
+//             }
+
+//         const votingTable = await VotingTable.findOne(
+//             { where: { "id": usersVotingTable.id }, 
+//             include: [{ model: Voter, include: [Citizen] }],
+//             //order: [[{model: Voter, as: 'voters'},'order', 'ASC']]
+//         });
+
+        //sort them by order. cannot do it in sql because col is varchar.
+       // votingTable.voters.sort((a,b)=>{return a.order - b.order});
+
+        // votingTable.voters.map(
+        //     (voter)=>{
+        //         voter.citizen.dataValues['age'] = math.diffInYearsFromToday(voter.citizen.birthday);
+        //     }
+        // );
+        
+//         res.json(votingTable);
+//     } catch (e) {
+//         next(e);
+//     }
+// };
+
+
 
 
 /**
@@ -75,7 +117,7 @@ votingTableController.vote = async (req, res, next) => {
         const isOwner = req.payload.isOwner;
         const voterId = req.params.voterId;
         //TODO: validate the parameters are present.
-        console.log(`Voting voter: ${voterId} and user ${userNationalId} `);
+        console.log(`Voting voter: ${voterId} and user ${userNationalId}`);
 
         const userCitizen = await Citizen.findOne({
             where: {"nationalId": userNationalId}, 
@@ -127,8 +169,8 @@ votingTableController.replenish = async (req, res, next) => {
     try {
         const userNationalId = req.payload.nationalId;
         const isOwner = req.payload.isOwner;
-        const qty = parseInt(req.params.qty,10);
-        console.log(`Replenish qty: ${qty} and user ${userNationalId} `);
+        const qty = parseInt(req.params.qty,10); // qty = quantity -----> cantidad de boletas repuestas
+        console.log(`Replenish qty: ${qty} and user ${userNationalId}`);
 
         const userCitizen = await Citizen.findOne({
             where: {"nationalId": userNationalId}, 
@@ -142,14 +184,14 @@ votingTableController.replenish = async (req, res, next) => {
             }]
         });
 
-        if(!isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable || isNaN(qty) ){
+        if(!isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable || isNaN(qty)){
             const err = Error('Mesa no encontrada.'); err.status = 422;
             throw err;
         }
 
         const votingTable = userCitizen.voters[0].votingtable;
         votingTable.replenishQty = votingTable.replenishQty + qty;
-        await votingTable.save(); 
+        await votingTable.save();
         
         res.json({message:'Reposición guardada correctamente'});
     } catch (e) {
@@ -165,7 +207,7 @@ votingTableController.scrutinyImage = async (req, res, next) => {
         console.log(`Scrutiny Image - user:${userNationalId}`);
         
         const userCitizen = await Citizen.findOne({
-            where: {"nationalId": userNationalId}, 
+            where: {"nationalId": userNationalId},
             include:[{model:Voter, where: {"isOwner":true},
                 include:[{model: VotingTable, where: {"isOpen":true}}]
             }]
@@ -204,7 +246,7 @@ votingTableController.scrutiny = async (req, res, next) => {
         const isOwner = req.payload.isOwner;
         const requestPartiesArr = req.body.quantities; 
         let notes = req.body.notes | '';
-        console.log(`Scrutiny Data: DNI User:${userNationalId} `);
+        console.log(`Scrutiny Data: DNI User:${userNationalId}`);
         
         if(notes.length > 480){
             notes = notes.substring(0, 480); //MAX LENGTH HARDC. :p
@@ -276,7 +318,7 @@ votingTableController.scrutiny = async (req, res, next) => {
 
         console.log(`notas: ${notes}`);
         //votingTable.isOpen = false;
-        votingTable.notes = notes; 
+        votingTable.notes = notes;
         await votingTable.save({transaction});
 
         // always call commit at the end

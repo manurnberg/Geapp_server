@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { User } from '../../models/user';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { environment } from "../../../environments/environment";
 import { filter } from 'rxjs/operators';
 import { List } from 'src/app/models/list';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { VotingTable } from 'src/app/models/voting-table';
 
 /*const httpOptions = {
   headers: new HttpHeaders({
@@ -20,6 +21,10 @@ import { AuthService } from 'src/app/auth/services/auth.service';
 })
 export class UserService {
   USERS_API_URL: string = environment.baseUrl+'/api/user';
+  // private dataSource = new BehaviorSubject<any>({});
+
+  // dataSource$ = this.dataSource.asObservable();
+
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
@@ -35,7 +40,9 @@ export class UserService {
     helpPhone: new FormControl({value:'', disabled:true}),
     role: new FormControl({value:'', disabled:true}),
     createdAt: new FormControl({value:'', disabled:true}),
-    approved: new FormControl(false)
+    approved: new FormControl(false),
+    fiscal: new FormControl(false),
+    table: new FormControl({value: '', disabled:true})
   });
 
   initFormGroup() {
@@ -49,10 +56,19 @@ export class UserService {
       phone: '',
       helpPhone: '',
       role: '',
+      fiscal: false,
+      table: '',
       createdAt: '',
       approved: false
     });
   }
+
+  // sendData(data){
+
+  //   this.dataSource.next(data)
+
+
+  // }
 
   populateForm(user){
     //console.log(user);

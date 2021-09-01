@@ -14,9 +14,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class LoginComponent implements OnInit {
 
   constructor(private authService: AuthService, private router:Router, private fb: FormBuilder) { }
-  
+
   loginForm:FormGroup;
-  
+
   myValidator(form:FormGroup){
     return true;
   }
@@ -37,7 +37,8 @@ export class LoginComponent implements OnInit {
   onSubmit(){
     //console.log(this.loginForm.value);
     this.authService.login(this.loginForm.value).subscribe(
-      (user:User) => { this.router.navigateByUrl('/'); },
+      (user:User) => { this.router.navigateByUrl('/');
+    console.log("User login -->>", user) },
       error => {
         console.log('Not right privileges: ' + error)}
       );
@@ -45,7 +46,7 @@ export class LoginComponent implements OnInit {
 
   onLogin(form):void{
     //console.log('Login', form.value);
-    
+
   }
 
 }
