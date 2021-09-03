@@ -4,7 +4,7 @@
     "username": "root",
     "password": "cacorucho",
     "database": "geapp_2",
-    "host": "MacBook-Pro-de-Matias.local",
+    "host": "localhost",
     "dialect": "mysql",
     "pool":{
       "max":5,

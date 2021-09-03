@@ -58,50 +58,6 @@ votingTableController.getVotingTable = async (req, res, next) => {
     }
 };
 
-// votingTableController.getUserVotingTable = async (req, res, next) => {
-//     try {
-//         console.log("Voting Table for DNI: " + req.body.nationalId);
-//         //need to find the voting table with its voters and citizens for the voting table where the user in session belongs to.
-//         //maybe this is not the best approach.
-//         const usersVotingTable = await VotingTable.findOne(
-//             { include: [{ 
-//                 model: Voter, 
-//                 include: [
-//                     { model: Citizen, 
-//                         where: { "nationalId": req.body.nationalId } 
-//                     }] 
-//                 }] 
-//             });
-
-//             if(!usersVotingTable){
-//                 const err = Error('Mesa no encontrada.'); err.status = 422;
-//                 throw err;
-//             }
-
-//         const votingTable = await VotingTable.findOne(
-//             { where: { "id": usersVotingTable.id }, 
-//             include: [{ model: Voter, include: [Citizen] }],
-//             //order: [[{model: Voter, as: 'voters'},'order', 'ASC']]
-//         });
-
-        //sort them by order. cannot do it in sql because col is varchar.
-       // votingTable.voters.sort((a,b)=>{return a.order - b.order});
-
-        // votingTable.voters.map(
-        //     (voter)=>{
-        //         voter.citizen.dataValues['age'] = math.diffInYearsFromToday(voter.citizen.birthday);
-        //     }
-        // );
-        
-//         res.json(votingTable);
-//     } catch (e) {
-//         next(e);
-//     }
-// };
-
-
-
-
 /**
  * - get voter of the user in session through its citizen.
  * - get the voter that wants to vote.
@@ -199,6 +155,8 @@ votingTableController.replenish = async (req, res, next) => {
     }
 };
 
+
+
 votingTableController.scrutinyImage = async (req, res, next) => {
     try {
         const userNationalId = req.payload.nationalId;
@@ -262,10 +220,10 @@ votingTableController.scrutiny = async (req, res, next) => {
             }
         });
 
-        if(!isValid){
-            const err = Error('Hay datos incorrectos.'); err.status = 422;
-            throw err;
-        }
+        // if(!isValid){
+        //     const err = Error('Hay datos incorrectos.'); err.status = 422;
+        //     throw err;
+        // }
 
         const election = await Election.findOne({ 
             where: {"isActive": true},
