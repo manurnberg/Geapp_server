@@ -93,11 +93,11 @@ votingTableController.vote = async (req, res, next) => {
         
         const voter = await Voter.findByPk(voterId, {include: [VotingTable]});
         
-        if(!isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable 
-            || !voter || !voter.votingtable ){
-            const err = Error('Mesa no encontrada.'); err.status = 422;
-            throw err;
-        }
+        // if(!isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable 
+        //     || !voter || !voter.votingtable ){
+        //     const err = Error('Mesa no encontrada.'); err.status = 422;
+        //     throw err;
+        // }
         
         //are both on the same table? is the table open? didn't vote yet?
         if(voter.votingtable.id === userCitizen.voters[0].votingtable.id  
@@ -140,10 +140,10 @@ votingTableController.replenish = async (req, res, next) => {
             }]
         });
 
-        if(!isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable || isNaN(qty)){
-            const err = Error('Mesa no encontrada.'); err.status = 422;
-            throw err;
-        }
+        // if(!isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable || isNaN(qty)){
+        //     const err = Error('Mesa no encontrada.'); err.status = 422;
+        //     throw err;
+        // }
 
         const votingTable = userCitizen.voters[0].votingtable;
         votingTable.replenishQty = votingTable.replenishQty + qty;

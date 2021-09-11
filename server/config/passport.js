@@ -30,20 +30,20 @@ passport.use('login',new LocalStrategy({
       }]
     });
 
-    console.log("User citizen-->>", userCitizen.id)
+    //console.log("User citizen-->>", userCitizen.id)
 
-    const userVotingTableId = await Voter.findOne({
-      where: {'citizenId': userCitizen.id},
-    });
+    // const userVotingTableId = await Voter.findOne({
+    //   where: {'citizenId': userCitizen.id},
+    // });
 
-    console.log("user voting table id  --->>" ,userVotingTableId.votingtableId.toString())
-    const vtId = userVotingTableId.votingtableId;
+    // console.log("user voting table id  --->>" ,userVotingTableId.votingtableId.toString())
+    // const vtId = userVotingTableId.votingtableId;
 
-    const userVTable = await VotingTable.findOne({
-      where: {'table': vtId},
-    });
+    // const userVTable = await VotingTable.findOne({
+    //   where: {'table': vtId},
+    // });
 
-    console.log("user voting table--->>", userVTable)
+    //console.log("user voting table--->>", userVTable)
 
 
 
@@ -58,7 +58,7 @@ passport.use('login',new LocalStrategy({
 
     //console.log("USER-->>", user)
 
-    return done(null, user, {votingTable : {'vtable': userVTable.table}});
+    return done(null, user);
   } catch (e) {
     console.log('error en login-passport:' + e);
     done(null, false, { errors: { 'message': 'Error en login.' } });

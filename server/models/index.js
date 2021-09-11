@@ -23,6 +23,8 @@ module.exports = db;
 
 sequelize.authenticate().then(() => {
   console.log('Connection has been established successfully.');
+
+  
 }).catch(err => {
   console.error('Unable to connect to the database:', err);
 });
@@ -37,14 +39,15 @@ const Friend = require('./friend');
 const User = require('./user');
 const Voter = require('./voter');
 const VotingTable = require('./voting-table');
+const { citizenUpload, citizendupload } = require('../controllers/padron-import.controller');
 
 Friend.belongsTo(User);
 
-Citizen.hasMany(Friend);
-Friend.belongsTo(Citizen);
+//Citizen.hasMany(Friend);
+//Friend.belongsTo(Citizen);
 
-Citizen.hasMany(Voter);
-Voter.belongsTo(Citizen);
+//Citizen.hasMany(Voter);
+//Voter.belongsTo(Citizen);
 
 VotingTable.hasMany(Voter);
 Voter.belongsTo(VotingTable);

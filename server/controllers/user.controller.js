@@ -111,6 +111,11 @@ userController.editUser = async (req, res, next) => {
             //   }]
             // }]
           });
+          const voterToEdit = await Voter.findOne({ where: { "citizenId": userCitizen.id } });
+          if (!voterToEdit) {
+              const err = Error('Votante no encontrado.'); err.status = 422;
+              throw err;
+          }
       
           console.log("User citizen-->>", userCitizen.id)
       
@@ -130,6 +135,7 @@ userController.editUser = async (req, res, next) => {
 
 
         //passwordChecker.checkPassword(password);
+        let fieldsObjVoter = { fields: ['isOwner']};
         let fieldsObj = { fields: ['approved'] };
         if (approved !== undefined) {
             userToEdit.approved = approved;
@@ -144,9 +150,18 @@ userController.editUser = async (req, res, next) => {
         }
         if(fiscal == false){ 
             userToEdit.fiscal = null;
-            userToEdit.table = null
-            fieldsObj = {fields: ['fiscal','table']}
+            userToEdit.table = null;
+            fieldsObj = {fields: ['fiscal','table']};
+            voterToEdit.isOwner = false;
+            fieldsObjVoter = {fields: ['isOwner']};
         }
+        
+
+        if(fiscal){
+            voterToEdit.isOwner = true
+            fieldsObjVoter = {fields: ['isOwner']}
+        }
+
 
         if (password !== undefined) {
             userToEdit.setPassword(password);
@@ -154,6 +169,7 @@ userController.editUser = async (req, res, next) => {
         }
 
         await userToEdit.save(fieldsObj);
+        await voterToEdit.save(fieldsObjVoter);
         const status = { status: 'Usuario actualizado correctamente.'};
         const table = {'nationalId':userByid.nationalId,'table': userVTable.table};
         console.log("table print--->>", table)
@@ -188,19 +204,19 @@ userController.login = async (req, res, next) => {
                 console.log("error--->>>",res.status(422))
                 return res.status(422).json(info);
             }
-            console.log("inside info", info.votingTable);
+           // console.log("inside info", info.votingTable);
 
             
             
-            const tableInfo = info.votingTable;
+            //const tableInfo = info.votingTable;
             const userToJson = user.toAuthJSON();
             
 
-            const mergeObject = Object.assign(userToJson,tableInfo);
-            console.log("usr to json merge", mergeObject);
+            //const mergeObject = Object.assign(userToJson,tableInfo);
+            //console.log("usr to json merge", mergeObject);
             
             user.token = user.generateJWT();  
-            return res.json(mergeObject);
+            return res.json(userToJson);
         })(req, res, next);
     } catch (e) {
         next(e);

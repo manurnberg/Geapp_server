@@ -40,8 +40,9 @@ app.use('/api/scpl/client', require('./routes/scpl_client.routes'));
 app.use('/api/ping', require('./routes/ping.routes'));
 
 // FOR ANGULAR: Catch all other routes and return the index file
-app.get('*', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/dist/frontend/index.html'));
+    
   });
 
 //Others:

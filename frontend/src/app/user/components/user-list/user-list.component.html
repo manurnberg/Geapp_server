@@ -14,38 +14,37 @@
         <mat-table [dataSource]="listData">
             <ng-container matColumnDef="nationalId">
                 <mat-header-cell *matHeaderCellDef>DNI</mat-header-cell>
-                <mat-cell *matCellDef="let element">{{element.nationalId}}</mat-cell>
+                <mat-cell *matCellDef="let element" >{{element.nationalId}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="first">
                 <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell>
-                <mat-cell *matCellDef="let element">{{element.first}}</mat-cell>
+                <mat-cell *matCellDef="let element" >{{element.first}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="last">
                 <mat-header-cell *matHeaderCellDef>Apellido</mat-header-cell>
-                <mat-cell *matCellDef="let element">{{element.last}}</mat-cell>
+                <mat-cell *matCellDef="let element" >{{element.last}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="phone">
                 <mat-header-cell *matHeaderCellDef>Teléfono</mat-header-cell>
-                <mat-cell *matCellDef="let element">{{element.phone}}</mat-cell>
+                <mat-cell *matCellDef="let element" >{{element.phone}}</mat-cell>
             </ng-container>
             <ng-container  matColumnDef="table">
               <mat-header-cell *matHeaderCellDef>Mesa</mat-header-cell>
-              <mat-cell *matCellDef="let element">{{element.table}}</mat-cell>
+              <mat-cell *matCellDef="let element" >{{element.table}}</mat-cell>
           </ng-container>
           <ng-container  matColumnDef="fiscal">
             <mat-header-cell *matHeaderCellDef>Fiscal</mat-header-cell>
-            <mat-cell *matCellDef="let element">{{element.fiscal}}</mat-cell>
+            <mat-cell *matCellDef="let element" ><div *ngIf="element.fiscal"><mat-icon aria-hidden="true" matToolTip="Fiscal" >done</mat-icon>
+
+              </div></mat-cell>
         </ng-container>
             <ng-container matColumnDef="actions">
-                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                <mat-header-cell *matHeaderCellDef>Acciones</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <button mat-icon-button (click)="onEdit(row)">
-                        <mat-icon>edit</mat-icon>
+                        <mat-icon>manage_accounts</mat-icon>
                     </button>
-                    <!-- <div *ngIf="row.fiscal">
-                      <mat-icon  aria-hidden="true" matToolTip="Fiscal" >person</mat-icon><p></p>
 
-                    </div> -->
 
 
                     <!-- <button mat-icon-button (click)="onDelete(row.$key)" color="warn"><mat-icon>delete_outline</mat-icon></button> -->
