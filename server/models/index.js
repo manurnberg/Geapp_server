@@ -7,6 +7,7 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
+
 let sequelize;
 if (config.use_env_variable) {
   console.log('Sequielize: V1');
@@ -23,11 +24,13 @@ module.exports = db;
 
 sequelize.authenticate().then(() => {
   console.log('Connection has been established successfully.');
-
+  
   
 }).catch(err => {
   console.error('Unable to connect to the database:', err);
 });
+
+
 
 // ---------- ASSOCIATIONS -------------------------------------
 const Citizen = require('./citizen');
@@ -39,7 +42,11 @@ const Friend = require('./friend');
 const User = require('./user');
 const Voter = require('./voter');
 const VotingTable = require('./voting-table');
-const { citizenUpload, citizendupload } = require('../controllers/padron-import.controller');
+const VotingTableSheet = require('./votingtable-result-sheet');
+
+
+//const VotingTableSheet = require('./votingtable_results_sheet');
+//const { citizenUpload, citizendupload } = require('../controllers/padron-import.controller');
 
 Friend.belongsTo(User);
 
@@ -64,6 +71,7 @@ ScrutinyParty.hasMany(Scrutiny);
 Scrutiny.belongsTo(ScrutinyParty);
 VotingTable.hasMany(Scrutiny);
 Scrutiny.belongsTo(VotingTable);
+
 
 
 /*

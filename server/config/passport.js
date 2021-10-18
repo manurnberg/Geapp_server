@@ -24,10 +24,10 @@ passport.use('login',new LocalStrategy({
 
     const userCitizen = await Citizen.findOne({
       where: { "nationalId": nationalId },
-      include: [{model: Voter, where: { "isOwner": true },
-        include: [{model: VotingTable, where: { "isOpen": true }
-        }]
-      }]
+      //include: [{model: Voter, where: { "isOwner": true },
+       // include: [{model: VotingTable, where: { "isOpen": true }
+        //}]
+     // }]
     });
 
     //console.log("User citizen-->>", userCitizen.id)

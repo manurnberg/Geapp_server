@@ -8,7 +8,7 @@ friendController.getFriends = async (req, res, next) =>{
 
         const friends = await Friend.findAll({
             where:{"userId": req.payload.id},
-            //include:[Citizen]
+            include:[Citizen]
         }); 
         
         res.json(friends);

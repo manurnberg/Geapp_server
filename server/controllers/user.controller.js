@@ -216,6 +216,7 @@ userController.login = async (req, res, next) => {
             //console.log("usr to json merge", mergeObject);
             
             user.token = user.generateJWT();  
+            console.log("user token--->", user.token)
             return res.json(userToJson);
         })(req, res, next);
     } catch (e) {
