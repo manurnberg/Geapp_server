@@ -75,7 +75,9 @@ votingTableController.getVotingTable = async (req, res, next) => {
  * if YES/YES/YES/NO? =>  save the vote with its vote. 
  */
 votingTableController.vote = async (req, res, next) => {
+    console.log('time voted ------->>>', req.body.dateVoted)
     try {
+        const dateVoted = req.body.dateVoted;
         const userNationalId = req.payload.nationalId;
         const isOwner = req.payload.isOwner;
         const voterId = req.params.voterId;
@@ -110,6 +112,7 @@ votingTableController.vote = async (req, res, next) => {
         if (voter.votingtable.id === userCitizen.voters[0].votingtable.id
             && voter.votingtable.isOpen && !voter.voted) {
             voter.voted = true;
+            voter.dateVoted = dateVoted
             await voter.save();
 
             voter.votingtable.sumVotes += 1;
@@ -129,7 +132,9 @@ votingTableController.vote = async (req, res, next) => {
  * - add qty to the previous value to the table.
  */
 votingTableController.replenish = async (req, res, next) => {
+    console.log('requuuuu---->>>>', req)
     try {
+        const date = req.body.updateReplenish;
         const userNationalId = req.payload.nationalId;
         const isOwner = req.payload.isOwner;
         const qty = parseInt(req.params.qty, 10); // qty = quantity -----> cantidad de boletas repuestas
@@ -152,8 +157,12 @@ votingTableController.replenish = async (req, res, next) => {
         //     throw err;
         // }
 
+        console.log('date time ---->>>>', date)
+
         const votingTable = userCitizen.voters[0].votingtable;
         votingTable.replenishQty = votingTable.replenishQty + qty;
+
+        votingTable.updateReplenish = date
         await votingTable.save();
 
         res.json({ message: 'Reposición guardada correctamente' });

@@ -8,7 +8,8 @@ Voter.init({
   isOwner: {type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false},
   votingtableId: {type: Sequelize.INTEGER, allowNull: true},
   citizenId: {type: Sequelize.INTEGER, allowNull: true},
-  address: {type: Sequelize.STRING, allowNull: true}
+  address: {type: Sequelize.STRING, allowNull: true},
+  dateVoted: {type: Sequelize.STRING(30), allowNull: false},
 },{sequelize, modelName:'voter'});
 
 module.exports = Voter;
