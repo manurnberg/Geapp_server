@@ -38,6 +38,7 @@ const upload = multer({
 const votingTableController = require('../controllers/voting-table.controller');
 
 router.get('/', auth.required, votingTableController.getVotingTable);
+router.post('/scrutiny/file/:tableNumber', auth.required, votingTableController.getScrutinyImage);
 // router.get('/:nationalId', auth.required, votingTableController.getUserVotingTable);
 router.put('/vote/:voterId', auth.required, votingTableController.vote);
 router.put('/replenish/:qty', auth.required, votingTableController.replenish);

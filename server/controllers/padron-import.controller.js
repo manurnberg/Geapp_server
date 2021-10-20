@@ -5,6 +5,9 @@ const { forEach } = require('p-iteration');
 const fs = require('fs');
 const axios = require('axios');
 const FormData = require('form-data');
+const StreamArray = require('stream-json/streamers/StreamArray');
+const { resolve } = require('path');
+const { rejects } = require('assert');
 // const fs = require('graceful-fs');
 
 
@@ -21,6 +24,17 @@ const parseDate = (string) => {
   return new Date(stringDate);
 
 }
+
+const streamUploadFunction = async ()=> {
+  return new Promise((resolve, rejects) => {
+    fs.createReadStream('server/assets/padron.json').pipe(StreamArray.withParser())
+    .on("data", async response =>{
+      await console.log("response---->>> ", response);
+    });
+  });
+}
+
+const stream = streamUploadFunction();
 
 // load a citizen to DB and then a voter 
 const citizenAndVoterUpload = async (jsonObject) => {
@@ -81,7 +95,7 @@ const citizenAndVoterUpload = async (jsonObject) => {
 
 }
 // local file consuming
-const citizendupload = citizenAndVoterUpload(jsonFile); 
+//const citizendupload = citizenAndVoterUpload(jsonFile); 
 
 
 // API consuming

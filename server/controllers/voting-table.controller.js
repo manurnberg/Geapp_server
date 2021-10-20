@@ -10,6 +10,7 @@ const fs = require('fs');
 const dateformat = require('dateformat');
 const math = require('../utils/math');
 const sequelize = require('../models').sequelize;
+Stream = require('stream').Transform;
 
 
 
@@ -22,7 +23,7 @@ const votingTableController = {};
 
 votingTableController.getVotingTable = async (req, res, next) => {
     try {
-        console.log("Voting Table for DNI: " + req.payload.nationalId);
+        console.log(" DNI: " + req.payload.nationalId);
         //need to find the voting table with its voters and citizens for the voting table where the user in session belongs to.
         //maybe this is not the best approach.
         const usersVotingTable = await VotingTable.findOne(
@@ -179,32 +180,32 @@ votingTableController.scrutinyImage = async (req, res, next) => {
 
         console.log(`Scrutiny Image - user:${userNationalId}`);
 
-        // const userCitizen = await Citizen.findOne({
-        //     where: { "nationalId": userNationalId },
-        //     include: [{
-        //         model: Voter, where: { "isOwner": true },
-        //         include: [{ model: VotingTable, where: { "isOpen": true } }]
-        //     }]
-        // });
+        const userCitizen = await Citizen.findOne({
+            where: { "nationalId": userNationalId },
+            include: [{
+                model: Voter, where: { "isOwner": true },
+                include: [{ model: VotingTable, where: { "isOpen": true } }]
+            }]
+        });
 
         // if (!req.file || !isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable) {
         //     const msg = (!req.file) ? 'Debe agregar imagen con nombre scrutinyImage' : 'Mesa no encontrada.';
         //     const err = Error(msg); err.status = 422;
         //     throw err;
         // }
-        //const votingTableId = userCitizen.voters[0].votingtable.id;
-        // const newPathAndName = config.filepath + '/' + votingTableId + dateformat(new Date(), "_yy_mm_dd_HH_MM_ss_") + req.file.originalname;
-        // fs.rename(req.file.path, newPathAndName, (err) => {
-        //     if (err) { console.log(err); }
-        //     console.log('Scrutiny file saved.');
-        // });
+        const votingTableId = userCitizen.voters[0].votingtable.id;
+        const newPathAndName = config.filepath + '/' + votingTableId + dateformat(new Date(), "_yy_mm_dd_HH_MM_ss_") + req.file.originalname;
+        fs.rename(req.file.path, newPathAndName, (err) => {
+            if (err) { console.log(err); }
+            console.log('Scrutiny file saved.');
+        });
 
-        // const sheetReference = newPathAndName;
-        const sheetReference = req.body.sheetReference;
+        const sheetReference = newPathAndName;
+        //const sheetReference = req.body.sheetReference;
         const datetime = new Date();
 
         const votingTableSheet = VotingTableSheet.build({
-            votingtable_id: 187,
+            votingtable_id: votingTableId,
             effective_voters: effectiveVoters,
             votes_in_ballot_box: votesInBallotBox,
             identity_contest_votes: identityContestvotes,
@@ -217,21 +218,31 @@ votingTableController.scrutinyImage = async (req, res, next) => {
 
 
         })
-        //votingTableSheet.votingtable_id = votingTableId;
+        
 
 
         await votingTableSheet.save();
 
 
-        // const votingTable = await VotingTable.findByPk(votingTableId);
-        // votingTable.scrutinyPath = newPathAndName;
-        // await votingTable.save();
+        const votingTable = await VotingTable.findByPk(votingTableId);
+        votingTable.scrutinyPath = newPathAndName;
+        await votingTable.save();
 
         res.json({ "message": "Imágen cargada con éxito." });
     } catch (e) {
         next(e);
     }
 };
+
+votingTableController.getScrutinyImage = async (req,res)=>{
+    const filepath = req.body.sheetReference
+
+
+    
+    
+
+
+}
 
 votingTableController.scrutiny = async (req, res, next) => {
     let transaction;

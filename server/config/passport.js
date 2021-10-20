@@ -14,6 +14,7 @@ passport.use('login',new LocalStrategy({
   console.log("pasa dentro de passport.js ")
   try {
     const user = await User.findOne({ where: { "nationalId": nationalId } });
+    console.log("usuario pasando por passport->", user)
     
     if (!user || !user.validPassword(password)) {
       return done(null, false, { errors: { 'message': 'DNI o contraseña incorrecta.' }});
@@ -22,15 +23,17 @@ passport.use('login',new LocalStrategy({
       return done(null, false, { errors: { 'message': 'Usuario bloqueado.' } });
     }
 
+    
+
     const userCitizen = await Citizen.findOne({
       where: { "nationalId": nationalId },
-      //include: [{model: Voter, where: { "isOwner": true },
-       // include: [{model: VotingTable, where: { "isOpen": true }
-        //}]
-     // }]
+       include: [{model: Voter, where: { "isOwner": true },
+       include: [{model: VotingTable, where: { "isOpen": true }
+       }]
+      }]
     });
 
-    //console.log("User citizen-->>", userCitizen.id)
+    console.log("User citizen-->>", userCitizen.id)
 
     // const userVotingTableId = await Voter.findOne({
     //   where: {'citizenId': userCitizen.id},
@@ -65,20 +68,20 @@ passport.use('login',new LocalStrategy({
     //done;
   }
 }));
-passport.use('elogin',new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password'
-}, async (email, password, done) => {
-    console.log("pasa dentro de epassport.js ")
-  try {
-    const user = await User.findOne({ where: { "email": email } });
+// passport.use('elogin',new LocalStrategy({
+//   usernameField: 'email',
+//   passwordField: 'password'
+// }, async (email, password, done) => {
+//     console.log("pasa dentro de epassport.js ")
+//   try {
+//     const user = await User.findOne({ where: { "email": email } });
     
-    if (!user || !user.validPassword(password)) {
-      return done(null, false, { errors: { 'message': 'Email o contraseña incorrecta.' } });
-    }
-    if (!user.approved) {
-      return done(null, false, { errors: { 'message': 'Usuario bloqueado.' } });
-    }
+//     if (!user || !user.validPassword(password)) {
+//       return done(null, false, { errors: { 'message': 'Email o contraseña incorrecta.' } });
+//     }
+//     if (!user.approved) {
+//       return done(null, false, { errors: { 'message': 'Usuario bloqueado.' } });
+//     }
 
     // const userCitizen = await Citizen.findOne({
     //   where: { "nationalId": nationalId },
@@ -93,12 +96,12 @@ passport.use('elogin',new LocalStrategy({
     //   user.isOwner=true;
     // }
 
-    return done(null, user);
-  } catch (e) {
-    console.log('error en login-passport:' + e);
-    done(null, false, { errors: { 'message': 'Error en login.' } });
-    //done;
-  }
+//     return done(null, user);
+//   } catch (e) {
+//     console.log('error en login-passport:' + e);
+//     done(null, false, { errors: { 'message': 'Error en login.' } });
+//     //done;
+//   }
 
-}));
+// }));
 

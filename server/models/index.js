@@ -53,8 +53,8 @@ Friend.belongsTo(User);
 //Citizen.hasMany(Friend);
 //Friend.belongsTo(Citizen);
 
-//Citizen.hasMany(Voter);
-//Voter.belongsTo(Citizen);
+Citizen.hasMany(Voter);
+Voter.belongsTo(Citizen);
 
 VotingTable.hasMany(Voter);
 Voter.belongsTo(VotingTable);
