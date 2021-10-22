@@ -9,7 +9,7 @@ Voter.init({
   votingtableId: {type: Sequelize.INTEGER, allowNull: true},
   citizenId: {type: Sequelize.INTEGER, allowNull: true},
   address: {type: Sequelize.STRING, allowNull: true},
-  dateVoted: {type: Sequelize.STRING(30), allowNull: false},
+  dateVoted: {type: Sequelize.STRING(30), allowNull: true},
 },{sequelize, modelName:'voter'});
 
 module.exports = Voter;

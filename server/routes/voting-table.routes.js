@@ -44,5 +44,6 @@ router.put('/vote/:voterId', auth.required, votingTableController.vote);
 router.put('/replenish/:qty', auth.required, votingTableController.replenish);
 router.post('/scrutiny/file', auth.required, upload.single('scrutinyImage'), votingTableController.scrutinyImage);
 router.post('/scrutiny', auth.required, votingTableController.scrutiny);
+router.post('/scrutiny/sheet', auth.required, votingTableController.getScrutinyImage);
 
 module.exports = router;

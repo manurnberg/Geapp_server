@@ -14,7 +14,7 @@ VotingTable.init({
   notes: {type: Sequelize.STRING(500), allowNull: true},
   scrutinyPath: {type: Sequelize.STRING(500), allowNull: true},
   sumVotes: {type: Sequelize.INTEGER, allowNull: true},
-  updateReplenish: {type: Sequelize.STRING(30), allowNull: false},
+  updateReplenish: {type: Sequelize.STRING(30), allowNull: true},
 },{sequelize, modelName:'votingtable'});
 
 
