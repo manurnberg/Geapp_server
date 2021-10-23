@@ -50,8 +50,8 @@ const VotingTableSheet = require('./votingtable-result-sheet');
 
 Friend.belongsTo(User);
 
-//Citizen.hasMany(Friend);
-//Friend.belongsTo(Citizen);
+Citizen.hasMany(Friend);
+Friend.belongsTo(Citizen);
 
 Citizen.hasMany(Voter);
 Voter.belongsTo(Citizen);

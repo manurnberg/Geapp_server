@@ -8,9 +8,11 @@ const config = require(__dirname + '/../config/config.json')[env];
 //file storage destination and file name. We will rename it later.
 const storage = multer.diskStorage({
     destination: function(req, file, cb){
+        console.log("filepath-->>", config)
          cb(null, config.filepath); //./uploads/
     },
     filename: function(req, file, cb){
+        console.log('file on backend-->', file)
         cb(null, file.originalname);
     }
 });

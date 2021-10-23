@@ -12,7 +12,9 @@ const math = require('../utils/math');
 const sequelize = require('../models').sequelize;
 const sequelize2 = require('sequelize');
 const User = require('../models/user');
+const { json } = require('sequelize');
 const Op = sequelize2.Op;
+let referencePathGlobal = ''
 
 
 
@@ -179,16 +181,18 @@ votingTableController.scrutinyImage = async (req, res, next) => {
     try {
         const userNationalId = req.payload.nationalId;
         const isOwner = req.payload.isOwner;
-        const effectiveVoters = req.body.effectiveVoters;
-        const votesInBallotBox = req.body.votesInBallotBox;
-        const identityContestvotes = req.body.identityContestvotes;
-        const nullVotes = req.body.nullVotes;
-        const appealedVotes = req.body.appealedVotes;
-        const whiteVotes = req.body.whiteVotes;
-        const totalVotes = req.body.totalVotes;
+        // const effectiveVoters = req.body.effectiveVoters;
+        // const votesInBallotBox = req.body.votesInBallotBox;
+        // const identityContestvotes = req.body.identityContestvotes;
+        // const nullVotes = req.body.nullVotes;
+        // const appealedVotes = req.body.appealedVotes;
+        // const whiteVotes = req.body.whiteVotes;
+        // const totalVotes = req.body.totalVotes;
+        // const testing = req
+        // console.log("formadata on backend-->>", testing);
 
 
-        console.log(`Scrutiny Image - user:${userNationalId}`);
+        // console.log(`Scrutiny Image - user:${userNationalId}`);
 
         const user = await User.findOne({
             where: { 'nationalId': userNationalId }
@@ -200,30 +204,30 @@ votingTableController.scrutinyImage = async (req, res, next) => {
             if (err) { console.log(err); }
             console.log('Scrutiny file saved.');
         });
-
+        referencePathGlobal = newPathAndName;
         const sheetReference = newPathAndName;
         console.log("sheetreference-->", sheetReference);
-       
-        const datetime = new Date();
 
-        const votingTableSheet = VotingTableSheet.build({
-            votingtable_id: votingTableId,
-            effective_voters: effectiveVoters,
-            votes_in_ballot_box: votesInBallotBox,
-            identity_contest_votes: identityContestvotes,
-            null_votes: nullVotes,
-            appealed_votes: appealedVotes,
-            white_votes: whiteVotes,
-            total_votes: totalVotes,
-            datetime: datetime,
-            sheet_reference: sheetReference
+        // const datetime = new Date();
 
-
-        })
+        // const votingTableSheet = VotingTableSheet.build({
+        //     votingtable_id: votingTableId,
+        //     effective_voters: effectiveVoters,
+        //     votes_in_ballot_box: votesInBallotBox,
+        //     identity_contest_votes: identityContestvotes,
+        //     null_votes: nullVotes,
+        //     appealed_votes: appealedVotes,
+        //     white_votes: whiteVotes,
+        //     total_votes: totalVotes,
+        //     datetime: datetime,
+        //     sheet_reference: referencePathGlobal
 
 
+        // })
 
-        await votingTableSheet.save();
+
+
+        // await votingTableSheet.save();
 
 
         const votingTable = await VotingTable.findByPk(votingTableId);
@@ -261,102 +265,145 @@ votingTableController.getScrutinyImage = async (req, res) => {
 }
 
 
-    votingTableController.scrutiny = async (req, res, next) => {
-        let transaction;
-        try {
-            // Unmanaged Transaction
-            transaction = await sequelize.transaction();
+votingTableController.scrutiny = async (req, res, next) => {
+    //let transaction;
+    // try {
+        // Unmanaged Transaction
+        //transaction = await sequelize.transaction();
 
-            console.log(`Scrutiny Data`);
-            const userNationalId = req.payload.nationalId;
-            const isOwner = req.payload.isOwner;
-            const requestPartiesArr = req.body.quantities;
-            let notes = req.body.notes | '';
-            console.log(`Scrutiny Data: DNI User:${userNationalId}`);
+        
+        const formdata = JSON.stringify(req.body.formdata);
 
-            if (notes.length > 480) {
-                notes = notes.substring(0, 480); //MAX LENGTH HARDC. :p
-            }
+        console.log(`Scrutiny Data ${JSON.stringify(req.body.formdata)}`);
+        const userNationalId = req.payload.nationalId;
+        const isOwner = req.payload.isOwner;
+        const requestPartiesArr = req.body.quantities;
+        console.log(`Scrutiny Data quant ${req.body.notes}`);
+        let notes = req.body.notes | '';
+        console.log(`Scrutiny Data: DNI User:${userNationalId}`);
 
-            //if length is 0, it's not valid.
-            let isValid = (requestPartiesArr.length > 0) ? true : false;
-            //check all params are positives, if one is not, it's not valid.
-            requestPartiesArr.forEach(scrutinyPartyObj => {
-                if (isNaN(scrutinyPartyObj.qty) || isNaN(scrutinyPartyObj.scrutinyPartyId)
-                    || scrutinyPartyObj.qty < 0 || scrutinyPartyObj.scrutinyPartyId < 0) {
-                    isValid = false;
-                }
-            });
+        const effectiveVoters = parseInt(formdata.effectiveVoters);
+        const votesInBallotBox = parseInt(formdata.votesInBallotBox);
+        const identityContestvotes = parseInt(formdata.identityContestvotes);
+        const nullVotes = parseInt(formdata.nullVotes);
+        const appealedVotes = parseInt(formdata.appealedVotes);
+        const whiteVotes = parseInt(formdata.whiteVotes);
+        const totalVotes = parseInt(formdata.totalVotes);
 
-            // if(!isValid){
-            //     const err = Error('Hay datos incorrectos.'); err.status = 422;
-            //     throw err;
-            // }
+        const user = await User.findOne({
+            where: { 'nationalId': userNationalId }
+        })
 
-            const election = await Election.findOne({
-                where: { "isActive": true },
-                include: [{ model: ScrutinyCategory, include: [ScrutinyParty] }]
-            });
+        const votingTableId = user.table
+        const votingTable = await VotingTable.findOne({
+            where: { 'id': votingTableId }
+        })
 
-            if (!election) {
-                const err = Error('Elección no encontrada.'); err.status = 422;
-                throw err;
-            }
+        const datetime = new Date();
 
-            const userCitizen = await Citizen.findOne({
-                where: { "nationalId": userNationalId },
-                include: [{
-                    model: Voter, where: { "isOwner": true },
-                    include: [{ model: VotingTable, where: { "isOpen": true } }]
-                }]
-            });
+        const votingTableSheet = VotingTableSheet.build({
+            votingtable_id: votingTableId,
+            effective_voters: effectiveVoters,
+            votes_in_ballot_box: votesInBallotBox,
+            identity_contest_votes: identityContestvotes,
+            null_votes: nullVotes,
+            appealed_votes: appealedVotes,
+            white_votes: whiteVotes,
+            total_votes: totalVotes,
+            datetime: datetime,
+            sheet_reference: referencePathGlobal
 
-            if (!isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable) {
-                const err = Error('Mesa cerrada o no encontrada.'); err.status = 422;
-                throw err;
-            }
 
-            const votingTable = userCitizen.voters[0].votingtable;
+        })
 
-            //flat all parties in an array.
-            let scrutiniesArr = [];
-            election.scrutinycategories.forEach(category => {
-                category.scrutinyparties.forEach(party => {
-                    scrutiniesArr.push({
-                        scrutinypartyId: party.id,
-                        votingtableId: votingTable.id,
-                        quantity: 0
-                    });
-                });
-            });
 
-            //update quantity if it's found in the request.
-            requestPartiesArr.forEach(reqParty => {
-                let scrutiny = scrutiniesArr.find(p => { return reqParty.scrutinyPartyId == p.scrutinypartyId });
-                if (scrutiny) {
-                    scrutiny.quantity = reqParty.qty;
-                }
-            });
 
-            console.log(`Persisting Scrutiny for vtable: ${votingTable.id} and DNI User: ${userNationalId}`);
-            /*scrutiniesArr.forEach(scr => { console.log(`scrutinypartyId: ${scr.scrutinypartyId} : quantity: ${scr.quantity} : votingtableId: ${scr.votingtableId}`);
-            });*/
-            await Scrutiny.bulkCreate(scrutiniesArr, { transaction });
+        await votingTableSheet.save();
 
-            console.log(`notas: ${notes}`);
-            //votingTable.isOpen = false;
-            votingTable.notes = notes;
-            await votingTable.save({ transaction });
-
-            // always call commit at the end
-            await transaction.commit();
-
-            res.json({ message: 'Datos cargados. Mesa cerrada.' });
-        } catch (e) {
-            // always rollback 
-            await transaction.rollback();
-            next(e);
+        if (notes.length > 480) {
+            notes = notes.substring(0, 480); //MAX LENGTH HARDC. :p
         }
-    };
 
-    module.exports = votingTableController;
+        //if length is 0, it's not valid.
+        //let isValid = (requestPartiesArr.length > 0) ? true : false;
+        //check all params are positives, if one is not, it's not valid.
+        // requestPartiesArr.forEach(scrutinyPartyObj => {
+        //     if (isNaN(scrutinyPartyObj.qty) || isNaN(scrutinyPartyObj.scrutinyPartyId)
+        //         || scrutinyPartyObj.qty < 0 || scrutinyPartyObj.scrutinyPartyId < 0) {
+        //         isValid = false;
+        //     }
+        // });
+
+        // if(!isValid){
+        //     const err = Error('Hay datos incorrectos.'); err.status = 422;
+        //     throw err;
+        // }
+
+        // const election = await Election.findOne({
+        //     where: { "isActive": true },
+        //     include: [{ model: ScrutinyCategory, include: [ScrutinyParty] }]
+        // });
+
+        // if (!election) {
+        //     const err = Error('Elección no encontrada.'); err.status = 422;
+        //     throw err;
+        // }
+
+        // const userCitizen = await Citizen.findOne({
+        //     where: { "nationalId": userNationalId },
+        //     include: [{
+        //         model: Voter, where: { "isOwner": true },
+        //         include: [{ model: VotingTable, where: { "isOpen": true } }]
+        //     }]
+        // });
+
+        // if (!isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable) {
+        //     const err = Error('Mesa cerrada o no encontrada.'); err.status = 422;
+        //     throw err;
+        // }
+
+        //const votingTable = userCitizen.voters[0].votingtable;
+        
+
+        //flat all parties in an array.
+        // let scrutiniesArr = [];
+        // election.scrutinycategories.forEach(category => {
+        //     category.scrutinyparties.forEach(party => {
+        //         scrutiniesArr.push({
+        //             scrutinypartyId: party.id,
+        //             votingtableId: votingTable.id,
+        //             quantity: 0
+        //         });
+        //     });
+        // });
+
+        // //update quantity if it's found in the request.
+        // requestPartiesArr.forEach(reqParty => {
+        //     let scrutiny = scrutiniesArr.find(p => { return reqParty.scrutinyPartyId == p.scrutinypartyId });
+        //     if (scrutiny) {
+        //         scrutiny.quantity = reqParty.qty;
+        //     }
+        // });
+
+        //console.log(`Persisting Scrutiny for vtable: ${votingTable.id} and DNI User: ${userNationalId}`);
+        /*scrutiniesArr.forEach(scr => { console.log(`scrutinypartyId: ${scr.scrutinypartyId} : quantity: ${scr.quantity} : votingtableId: ${scr.votingtableId}`);
+        });*/
+        //await Scrutiny.bulkCreate(scrutiniesArr, { transaction });
+
+        console.log(`notas: ${notes}`);
+        //votingTable.isOpen = false;
+        votingTable.notes = notes;
+        // await votingTable.save({ transaction });
+        await votingTable.save();
+        // always call commit at the end
+       // await transaction.commit();
+
+        res.json({ message: 'Datos cargados. Mesa cerrada.' });
+    // } catch (e) {
+    //     // always rollback 
+    //     await transaction.rollback();
+    //     next(e);
+    // }
+};
+
+module.exports = votingTableController;
