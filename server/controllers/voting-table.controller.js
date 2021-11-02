@@ -140,8 +140,12 @@ votingTableController.vote = async (req, res, next) => {
  * - add qty to the previous value to the table.
  */
 votingTableController.replenish = async (req, res, next) => {
+
+
     console.log('requuuuu---->>>>', req)
     try {
+
+        
         const date = req.body.updateReplenish;
         const userNationalId = req.payload.nationalId;
         const isOwner = req.payload.isOwner;
@@ -163,7 +167,19 @@ votingTableController.replenish = async (req, res, next) => {
         console.log('date time ---->>>>', date)
 
         const votingTable = userCitizen.voters[0].votingtable;
-        votingTable.replenishQty = votingTable.replenishQty + qty;
+
+        if(req.body.newQuantity){
+            console.log("newQuantity: " + req.body.newQuantity);
+            const lastQuantity = req.body.lastQuantity;
+            const newQuantity = req.body.newQuantity;
+            
+            var aux = votingTable.replenishQty;
+            aux = aux - lastQuantity;
+            aux = aux + newQuantity;
+            votingTable.replenishQty = aux;
+        } else{
+            votingTable.replenishQty = votingTable.replenishQty + qty;
+        }
 
         votingTable.updateReplenish = date
         await votingTable.save();
