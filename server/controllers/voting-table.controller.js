@@ -282,13 +282,17 @@ votingTableController.scrutiny = async (req, res, next) => {
         let notes = req.body.notes | '';
         console.log(`Scrutiny Data: DNI User:${userNationalId}`);
 
-        const effectiveVoters = parseInt(formdata.effectiveVoters);
-        const votesInBallotBox = parseInt(formdata.votesInBallotBox);
-        const identityContestvotes = parseInt(formdata.identityContestvotes);
-        const nullVotes = parseInt(formdata.nullVotes);
-        const appealedVotes = parseInt(formdata.appealedVotes);
-        const whiteVotes = parseInt(formdata.whiteVotes);
-        const totalVotes = parseInt(formdata.totalVotes);
+        const jsonData = JSON.parse(formdata);
+
+        const effectiveVoters = parseInt(jsonData.effectiveVoters, 10);
+        const votesInBallotBox = parseInt(jsonData.votesInBallotBox);
+        const identityContestvotes = parseInt(jsonData.identityContestvotes);
+        const nullVotes = parseInt(jsonData.nullVotes);
+        const appealedVotes = parseInt(jsonData.appealedVotes);
+        const whiteVotes = parseInt(jsonData.whiteVotes);
+        const totalVotes = parseInt(jsonData.totalVotes);
+
+        console.log(`Scrutiny Data:effectivevoters:${effectiveVoters}`);
 
         const user = await User.findOne({
             where: { 'nationalId': userNationalId }
@@ -315,6 +319,8 @@ votingTableController.scrutiny = async (req, res, next) => {
 
 
         })
+
+        console.log("votingtablesheet-->> ", votingTableSheet);
 
 
 

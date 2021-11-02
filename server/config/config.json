@@ -1,10 +1,12 @@
 {
   "development": {
+    "filepath": "./uploads/",
     "jwtsecret": "ABCDEFGHIJK0123456789",
     "username": "root",
-    "password": "cacorucho",
-    "database": "geapp_2",
-    "host": "localhost",
+    "password": "secret",
+    "database": "geapp_local",
+    "host": "127.0.0.1",
+    "port": 33061,
     "dialect": "mysql",
     "pool":{
       "max":5,
