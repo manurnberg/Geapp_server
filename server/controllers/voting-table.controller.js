@@ -32,20 +32,30 @@ votingTableController.getVotingTable = async (req, res, next) => {
         console.log(" DNI: " + req.payload.nationalId);
         //need to find the voting table with its voters and citizens for the voting table where the user in session belongs to.
         //maybe this is not the best approach.
+        const fiscalUser = await User.findOne({
+            where: { 'nationalId': req.payload.nationalId },
+        })
+
         const usersVotingTable = await VotingTable.findOne(
             {
-                include: [{
-                    model: Voter,
-                    include: [
-                        {
-                            model: Citizen,
-                            where: {
-                                nationalId: req.payload.nationalId
-                            }
-                        }]
-                }]
+                where : {
+                    'id': fiscalUser.table,
+                }
+
+
+
+                // include: [{
+                //     model: Voter,
+                //     include: [
+                //         {
+                //             model: Citizen,
+                //             where: {
+                //                 nationalId: req.payload.nationalId
+                //             }
+                //         }]
+                // }]
             });
-        console.log("test" + JSON.stringify(usersVotingTable))
+        console.log("test ------->>>>>>>>>" + JSON.stringify(usersVotingTable))
         if (!usersVotingTable) {
             const err = Error('Mesa no encontrada.'); err.status = 422;
             throw err;
