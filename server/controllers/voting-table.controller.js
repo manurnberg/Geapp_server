@@ -38,7 +38,7 @@ votingTableController.getVotingTable = async (req, res, next) => {
 
         const usersVotingTable = await VotingTable.findOne(
             {
-                where : {
+                where: {
                     'id': fiscalUser.table,
                 }
 
@@ -107,34 +107,41 @@ votingTableController.vote = async (req, res, next) => {
     try {
         const dateVoted = req.body.dateVoted;
         const userNationalId = req.payload.nationalId;
-        const isOwner = req.payload.isOwner;
+        //const isOwner = req.payload.isOwner;
         const voterId = req.params.voterId;
         //TODO: validate the parameters are present.
         console.log(`Voting voter: ${voterId} and user ${userNationalId}`);
 
-        const userCitizen = await Citizen.findOne({
-            where: { "nationalId": userNationalId },
-            include: [{
-                model: Voter,
-                where: { "isOwner": true },
-                include: [{
-                    model: VotingTable,
-                    where: { "isOpen": true }
-                }]
-            }]
-        });
+        const userFiscal = await User.findOne({
+            where: { 'nationalId': userNationalId }
+        })
+
+        // const userCitizen = await Citizen.findOne({
+        //     where: { "nationalId": userNationalId },
+        //     include: [{
+        //         model: Voter,
+        //         where: { "isOwner": true },
+        //         include: [{
+        //             model: VotingTable,
+        //             where: { "isOpen": true }
+        //         }]
+        //     }]
+        // });
+
 
 
         const voter = await Voter.findByPk(voterId, { include: [VotingTable] });
+        console.log("voter-->>>", voter);
 
 
-        if (voter.votingtable.id === userCitizen.voters[0].votingtable.id
-            && voter.votingtable.isOpen && !voter.voted) {
-            voter.voted = true;
+        if (
+            voter.votingtable.isOpen && !voter.voted) {
+            voter.voted = 1;
             voter.dateVoted = dateVoted
             await voter.save();
 
             voter.votingtable.sumVotes += 1;
+            console.log("voter.votingtable-->>", voter.votingtable.sumVotes);
             await voter.votingtable.save();
         }
 
@@ -155,39 +162,46 @@ votingTableController.replenish = async (req, res, next) => {
     console.log('requuuuu---->>>>', req)
     try {
 
-        
+
         const date = req.body.updateReplenish;
         const userNationalId = req.payload.nationalId;
         const isOwner = req.payload.isOwner;
         const qty = parseInt(req.params.qty, 10); // qty = quantity -----> cantidad de boletas repuestas
         console.log(`Replenish qty: ${qty} and user ${userNationalId}`);
 
-        const userCitizen = await Citizen.findOne({
-            where: { "nationalId": userNationalId },
-            include: [{
-                model: Voter,
-                where: { "isOwner": true },
-                include: [{
-                    model: VotingTable,
-                    where: { "isOpen": true }
-                }]
-            }]
-        });
+        // const userCitizen = await Citizen.findOne({
+        //     where: { "nationalId": userNationalId },
+        //     include: [{
+        //         model: Voter,
+        //         where: { "isOwner": true },
+        //         include: [{
+        //             model: VotingTable,
+        //             where: { "isOpen": true }
+        //         }]
+        //     }]
+        // });
+        const userFiscal = await User.findOne({
+            where: { "nationalId": userNationalId }
+        })
 
         console.log('date time ---->>>>', date)
 
-        const votingTable = userCitizen.voters[0].votingtable;
+        const votingTable = await VotingTable.findOne(
+            {
+                where: { "id": userFiscal.table }
+            })
 
-        if(req.body.newQuantity){
+
+        if (req.body.newQuantity) {
             console.log("newQuantity: " + req.body.newQuantity);
             const lastQuantity = req.body.lastQuantity;
             const newQuantity = req.body.newQuantity;
-            
+
             var aux = votingTable.replenishQty;
             aux = aux - lastQuantity;
             aux = aux + newQuantity;
             votingTable.replenishQty = aux;
-        } else{
+        } else {
             votingTable.replenishQty = votingTable.replenishQty + qty;
         }
 
@@ -294,143 +308,143 @@ votingTableController.getScrutinyImage = async (req, res) => {
 votingTableController.scrutiny = async (req, res, next) => {
     //let transaction;
     // try {
-        // Unmanaged Transaction
-        //transaction = await sequelize.transaction();
-
-        
-        const formdata = JSON.stringify(req.body.formdata);
-
-        console.log(`Scrutiny Data ${JSON.stringify(req.body.formdata)}`);
-        const userNationalId = req.payload.nationalId;
-        const isOwner = req.payload.isOwner;
-        const requestPartiesArr = req.body.quantities;
-        console.log(`Scrutiny Data quant ${req.body.notes}`);
-        let notes = req.body.notes | '';
-        console.log(`Scrutiny Data: DNI User:${userNationalId}`);
-
-        const jsonData = JSON.parse(formdata);
-
-        const effectiveVoters = parseInt(jsonData.effectiveVoters, 10);
-        const votesInBallotBox = parseInt(jsonData.votesInBallotBox);
-        const identityContestvotes = parseInt(jsonData.identityContestvotes);
-        const nullVotes = parseInt(jsonData.nullVotes);
-        const appealedVotes = parseInt(jsonData.appealedVotes);
-        const whiteVotes = parseInt(jsonData.whiteVotes);
-        const totalVotes = parseInt(jsonData.totalVotes);
-
-        console.log(`Scrutiny Data:effectivevoters:${effectiveVoters}`);
-
-        const user = await User.findOne({
-            where: { 'nationalId': userNationalId }
-        })
-
-        const votingTableId = user.table
-        const votingTable = await VotingTable.findOne({
-            where: { 'id': votingTableId }
-        })
-
-        const datetime = new Date();
-
-        const votingTableSheet = VotingTableSheet.build({
-            votingtable_id: votingTableId,
-            effective_voters: effectiveVoters,
-            votes_in_ballot_box: votesInBallotBox,
-            identity_contest_votes: identityContestvotes,
-            null_votes: nullVotes,
-            appealed_votes: appealedVotes,
-            white_votes: whiteVotes,
-            total_votes: totalVotes,
-            datetime: datetime,
-            sheet_reference: referencePathGlobal
+    // Unmanaged Transaction
+    //transaction = await sequelize.transaction();
 
 
-        })
+    const formdata = JSON.stringify(req.body.formdata);
 
-        console.log("votingtablesheet-->> ", votingTableSheet);
+    console.log(`Scrutiny Data ${JSON.stringify(req.body.formdata)}`);
+    const userNationalId = req.payload.nationalId;
+    const isOwner = req.payload.isOwner;
+    const requestPartiesArr = req.body.quantities;
+    console.log(`Scrutiny Data quant ${req.body.notes}`);
+    let notes = req.body.notes | '';
+    console.log(`Scrutiny Data: DNI User:${userNationalId}`);
+
+    const jsonData = JSON.parse(formdata);
+
+    const effectiveVoters = parseInt(jsonData.effectiveVoters, 10);
+    const votesInBallotBox = parseInt(jsonData.votesInBallotBox);
+    const identityContestvotes = parseInt(jsonData.identityContestvotes);
+    const nullVotes = parseInt(jsonData.nullVotes);
+    const appealedVotes = parseInt(jsonData.appealedVotes);
+    const whiteVotes = parseInt(jsonData.whiteVotes);
+    const totalVotes = parseInt(jsonData.totalVotes);
+
+    console.log(`Scrutiny Data:effectivevoters:${effectiveVoters}`);
+
+    const user = await User.findOne({
+        where: { 'nationalId': userNationalId }
+    })
+
+    const votingTableId = user.table
+    const votingTable = await VotingTable.findOne({
+        where: { 'id': votingTableId }
+    })
+
+    const datetime = new Date();
+
+    const votingTableSheet = VotingTableSheet.build({
+        votingtable_id: votingTableId,
+        effective_voters: effectiveVoters,
+        votes_in_ballot_box: votesInBallotBox,
+        identity_contest_votes: identityContestvotes,
+        null_votes: nullVotes,
+        appealed_votes: appealedVotes,
+        white_votes: whiteVotes,
+        total_votes: totalVotes,
+        datetime: datetime,
+        sheet_reference: referencePathGlobal
+
+
+    })
+
+    console.log("votingtablesheet-->> ", votingTableSheet);
 
 
 
-        await votingTableSheet.save();
+    await votingTableSheet.save();
 
-        if (notes.length > 480) {
-            notes = notes.substring(0, 480); //MAX LENGTH HARDC. :p
-        }
+    if (notes.length > 480) {
+        notes = notes.substring(0, 480); //MAX LENGTH HARDC. :p
+    }
 
-        //if length is 0, it's not valid.
-        //let isValid = (requestPartiesArr.length > 0) ? true : false;
-        //check all params are positives, if one is not, it's not valid.
-        // requestPartiesArr.forEach(scrutinyPartyObj => {
-        //     if (isNaN(scrutinyPartyObj.qty) || isNaN(scrutinyPartyObj.scrutinyPartyId)
-        //         || scrutinyPartyObj.qty < 0 || scrutinyPartyObj.scrutinyPartyId < 0) {
-        //         isValid = false;
-        //     }
-        // });
+    //if length is 0, it's not valid.
+    //let isValid = (requestPartiesArr.length > 0) ? true : false;
+    //check all params are positives, if one is not, it's not valid.
+    // requestPartiesArr.forEach(scrutinyPartyObj => {
+    //     if (isNaN(scrutinyPartyObj.qty) || isNaN(scrutinyPartyObj.scrutinyPartyId)
+    //         || scrutinyPartyObj.qty < 0 || scrutinyPartyObj.scrutinyPartyId < 0) {
+    //         isValid = false;
+    //     }
+    // });
 
-        // if(!isValid){
-        //     const err = Error('Hay datos incorrectos.'); err.status = 422;
-        //     throw err;
-        // }
+    // if(!isValid){
+    //     const err = Error('Hay datos incorrectos.'); err.status = 422;
+    //     throw err;
+    // }
 
-        // const election = await Election.findOne({
-        //     where: { "isActive": true },
-        //     include: [{ model: ScrutinyCategory, include: [ScrutinyParty] }]
-        // });
+    // const election = await Election.findOne({
+    //     where: { "isActive": true },
+    //     include: [{ model: ScrutinyCategory, include: [ScrutinyParty] }]
+    // });
 
-        // if (!election) {
-        //     const err = Error('Elección no encontrada.'); err.status = 422;
-        //     throw err;
-        // }
+    // if (!election) {
+    //     const err = Error('Elección no encontrada.'); err.status = 422;
+    //     throw err;
+    // }
 
-        // const userCitizen = await Citizen.findOne({
-        //     where: { "nationalId": userNationalId },
-        //     include: [{
-        //         model: Voter, where: { "isOwner": true },
-        //         include: [{ model: VotingTable, where: { "isOpen": true } }]
-        //     }]
-        // });
+    // const userCitizen = await Citizen.findOne({
+    //     where: { "nationalId": userNationalId },
+    //     include: [{
+    //         model: Voter, where: { "isOwner": true },
+    //         include: [{ model: VotingTable, where: { "isOpen": true } }]
+    //     }]
+    // });
 
-        // if (!isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable) {
-        //     const err = Error('Mesa cerrada o no encontrada.'); err.status = 422;
-        //     throw err;
-        // }
+    // if (!isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable) {
+    //     const err = Error('Mesa cerrada o no encontrada.'); err.status = 422;
+    //     throw err;
+    // }
 
-        //const votingTable = userCitizen.voters[0].votingtable;
-        
+    //const votingTable = userCitizen.voters[0].votingtable;
 
-        //flat all parties in an array.
-        // let scrutiniesArr = [];
-        // election.scrutinycategories.forEach(category => {
-        //     category.scrutinyparties.forEach(party => {
-        //         scrutiniesArr.push({
-        //             scrutinypartyId: party.id,
-        //             votingtableId: votingTable.id,
-        //             quantity: 0
-        //         });
-        //     });
-        // });
 
-        // //update quantity if it's found in the request.
-        // requestPartiesArr.forEach(reqParty => {
-        //     let scrutiny = scrutiniesArr.find(p => { return reqParty.scrutinyPartyId == p.scrutinypartyId });
-        //     if (scrutiny) {
-        //         scrutiny.quantity = reqParty.qty;
-        //     }
-        // });
+    //flat all parties in an array.
+    // let scrutiniesArr = [];
+    // election.scrutinycategories.forEach(category => {
+    //     category.scrutinyparties.forEach(party => {
+    //         scrutiniesArr.push({
+    //             scrutinypartyId: party.id,
+    //             votingtableId: votingTable.id,
+    //             quantity: 0
+    //         });
+    //     });
+    // });
 
-        //console.log(`Persisting Scrutiny for vtable: ${votingTable.id} and DNI User: ${userNationalId}`);
-        /*scrutiniesArr.forEach(scr => { console.log(`scrutinypartyId: ${scr.scrutinypartyId} : quantity: ${scr.quantity} : votingtableId: ${scr.votingtableId}`);
-        });*/
-        //await Scrutiny.bulkCreate(scrutiniesArr, { transaction });
+    // //update quantity if it's found in the request.
+    // requestPartiesArr.forEach(reqParty => {
+    //     let scrutiny = scrutiniesArr.find(p => { return reqParty.scrutinyPartyId == p.scrutinypartyId });
+    //     if (scrutiny) {
+    //         scrutiny.quantity = reqParty.qty;
+    //     }
+    // });
 
-        console.log(`notas: ${notes}`);
-        //votingTable.isOpen = false;
-        votingTable.notes = notes;
-        // await votingTable.save({ transaction });
-        await votingTable.save();
-        // always call commit at the end
-       // await transaction.commit();
+    //console.log(`Persisting Scrutiny for vtable: ${votingTable.id} and DNI User: ${userNationalId}`);
+    /*scrutiniesArr.forEach(scr => { console.log(`scrutinypartyId: ${scr.scrutinypartyId} : quantity: ${scr.quantity} : votingtableId: ${scr.votingtableId}`);
+    });*/
+    //await Scrutiny.bulkCreate(scrutiniesArr, { transaction });
 
-        res.json({ message: 'Datos cargados. Mesa cerrada.' });
+    console.log(`notas: ${notes}`);
+    //votingTable.isOpen = false;
+    votingTable.notes = notes;
+    // await votingTable.save({ transaction });
+    await votingTable.save();
+    // always call commit at the end
+    // await transaction.commit();
+
+    res.json({ message: 'Datos cargados. Mesa cerrada.' });
     // } catch (e) {
     //     // always rollback 
     //     await transaction.rollback();
