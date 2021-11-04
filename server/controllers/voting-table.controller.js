@@ -331,6 +331,8 @@ votingTableController.scrutiny = async (req, res, next) => {
     const appealedVotes = parseInt(jsonData.appealedVotes);
     const whiteVotes = parseInt(jsonData.whiteVotes);
     const totalVotes = parseInt(jsonData.totalVotes);
+    const diference = parseInt(jsonData.diference);
+    const electoralCommand = parseInt(jsonData.electoralCommand);
 
     console.log(`Scrutiny Data:effectivevoters:${effectiveVoters}`);
 
@@ -354,6 +356,8 @@ votingTableController.scrutiny = async (req, res, next) => {
         appealed_votes: appealedVotes,
         white_votes: whiteVotes,
         total_votes: totalVotes,
+        diference: diference,
+        electoral_command: electoralCommand,
         datetime: datetime,
         sheet_reference: referencePathGlobal
 
