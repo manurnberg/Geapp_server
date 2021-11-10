@@ -14,9 +14,8 @@ const sequelize2 = require('sequelize');
 const User = require('../models/user');
 const { json } = require('sequelize');
 const Op = sequelize2.Op;
+const Party = require('../models/party');
 let referencePathGlobal = ''
-
-
 
 
 
@@ -271,7 +270,7 @@ votingTableController.scrutinyImage = async (req, res, next) => {
 
 
         const votingTable = await VotingTable.findByPk(votingTableId);
-        votingTable.scrutinyPath = newPathAndName;
+        votingTable.scrutinyPath = sheetReference;
         await votingTable.save();
 
         res.json({ "message": "Imágen cargada con éxito." });
@@ -287,11 +286,11 @@ const base64converter = (file) => {
 votingTableController.getScrutinyImage = async (req, res) => {
     console.log("req-->>", req.body)
     try {
-        const sheetReference = await VotingTableSheet.findOne({
+        const sheetReference = await VotingTable.findOne({
             where: { 'votingtable_id': req.body.vtableId }
         })
         console.log("sheetreference", sheetReference);
-        const filepath = sheetReference.sheet_reference;
+        const filepath = sheetReference.scrutinyPath;
 
         const image64 = base64converter(filepath);
         console.log("image64 ", image64)
@@ -310,9 +309,28 @@ votingTableController.scrutiny = async (req, res, next) => {
     // try {
     // Unmanaged Transaction
     //transaction = await sequelize.transaction();
-
-
     const formdata = JSON.stringify(req.body.formdata);
+    const formcst = JSON.stringify(req.body.formcst);
+    const jsonFormCst = JSON.parse(formcst);
+    console.log ('FORM -------->' + jsonFormCst.nameParty);
+
+    const formpidc = JSON.stringify(req.body.formpidc);
+    const jsonFormPidc = JSON.parse(formpidc);
+    
+    const formfdt = JSON.stringify(req.body.formfdt);
+    const jsonFormFdt = JSON.parse(formfdt);
+
+    const formjpc = JSON.stringify(req.body.formjpc);
+    const jsonFormJpc = JSON.parse(formjpc);
+
+    const formfizq = JSON.stringify(req.body.formfizq);
+    const jsonFormFizq = JSON.parse(formfizq);
+
+    const formSenator = JSON.stringify(req.body.formsenator);
+    const jsonFormSenator = JSON.parse(formSenator);
+
+    const formDeputy = JSON.stringify(req.body.formdeputy);
+    const jsonFormDeputy = JSON.parse(formDeputy);
 
     console.log(`Scrutiny Data ${JSON.stringify(req.body.formdata)}`);
     const userNationalId = req.payload.nationalId;
@@ -326,15 +344,11 @@ votingTableController.scrutiny = async (req, res, next) => {
 
     const effectiveVoters = parseInt(jsonData.effectiveVoters, 10);
     const votesInBallotBox = parseInt(jsonData.votesInBallotBox);
-    const identityContestvotes = parseInt(jsonData.identityContestvotes);
-    const nullVotes = parseInt(jsonData.nullVotes);
-    const appealedVotes = parseInt(jsonData.appealedVotes);
-    const whiteVotes = parseInt(jsonData.whiteVotes);
-    const totalVotes = parseInt(jsonData.totalVotes);
     const diference = parseInt(jsonData.diference);
-    const electoralCommand = parseInt(jsonData.electoralCommand);
 
     console.log(`Scrutiny Data:effectivevoters:${effectiveVoters}`);
+    const datetime = new Date();
+
 
     const user = await User.findOne({
         where: { 'nationalId': userNationalId }
@@ -344,36 +358,91 @@ votingTableController.scrutiny = async (req, res, next) => {
     const votingTable = await VotingTable.findOne({
         where: { 'id': votingTableId }
     })
+    // const votingTable = await VotingTable.findByPk(votingTableId);
+    // votingTable.scrutinyPath = newPathAndName;
 
-    const datetime = new Date();
+    votingTable.effective_voters = effectiveVoters;
+        votingTable.votes_in_ballot_box=votesInBallotBox;
+        votingTable.diference=diference;
+    
 
-    const votingTableSheet = VotingTableSheet.build({
+    const votingTableSheetSenator = VotingTableSheet.build({
         votingtable_id: votingTableId,
-        effective_voters: effectiveVoters,
-        votes_in_ballot_box: votesInBallotBox,
-        identity_contest_votes: identityContestvotes,
-        null_votes: nullVotes,
-        appealed_votes: appealedVotes,
-        white_votes: whiteVotes,
-        total_votes: totalVotes,
-        diference: diference,
-        electoral_command: electoralCommand,
-        datetime: datetime,
-        sheet_reference: referencePathGlobal
-
-
+        identity_contest_votes: parseInt(jsonFormSenator.identityContestVotes),
+        null_votes: parseInt(jsonFormSenator.nullVotes),
+        appealed_votes: parseInt(jsonFormSenator.appealedVotes),
+        white_votes: parseInt(jsonFormSenator.whiteVotes),
+        total_votes: parseInt(jsonFormSenator.totalVotes),
+        datetime: new Date(),
+        electoral_command: parseInt(jsonFormSenator.electoralCommand),
+        type: jsonFormSenator.type,
     })
 
-    console.log("votingtablesheet-->> ", votingTableSheet);
+    const votingTableSheetDeputy = VotingTableSheet.build({
+        votingtable_id: votingTableId,
+        identity_contest_votes: parseInt(jsonFormDeputy.identityContestVotes),
+        null_votes: parseInt(jsonFormDeputy.nullVotes),
+        appealed_votes: parseInt(jsonFormDeputy.appealedVotes),
+        white_votes: parseInt(jsonFormDeputy.whiteVotes),
+        total_votes: parseInt(jsonFormDeputy.totalVotes),
+        datetime: new Date(),
+        electoral_command: parseInt(jsonFormDeputy.electoralCommand),
+        type: jsonFormDeputy.type,
+    })
+    const partyPidc = Party.build({
+        votingtable_id: votingTableId,
+        nameParty: jsonFormPidc.nameParty,
+        senator: parseInt(jsonFormPidc.votoSenador),
+        deputy: parseInt(jsonFormPidc.votoDeputy),
+    })
+    const partyCst = Party.build({
+        votingtable_id: votingTableId,
+        nameParty: jsonFormCst.nameParty,
+        senator: parseInt(jsonFormCst.votoSenador),
+        deputy: parseInt(jsonFormCst.votoDeputy),
+    })
+    const partyJpc = Party.build({
+        votingtable_id: votingTableId,
+        nameParty: jsonFormJpc.nameParty,
+        senator: parseInt(jsonFormJpc.votoSenador),
+        deputy: parseInt(jsonFormJpc.votoDeputy),
+    })
+    const partyFdt = Party.build({
+        votingtable_id: votingTableId,
+        nameParty: jsonFormFdt.nameParty,
+        senator: parseInt(jsonFormFdt.votoSenador),
+        deputy: parseInt(jsonFormFdt.votoDeputy),
+    })
+    const partyFizq = Party.build({
+        votingtable_id: votingTableId,
+        nameParty: jsonFormFizq.nameParty,
+        senator: parseInt(jsonFormFizq.votoSenador),
+        deputy: parseInt(jsonFormFizq.votoDeputy),
+    })
+    
 
 
 
-    await votingTableSheet.save();
+
+    console.log("votingtable-->> ", votingTable);
+    console.log("votingTableSheetSenator-->> ", votingTableSheetSenator);
+    console.log ("VERIFICAR NAN -------->>>>>", votingTableSheetSenator.identity_contest_votes);
+    console.log("FORM JPC ----->", partyJpc )
+
+    // await votingTable.save();
+    await votingTableSheetSenator.save();
+    await votingTableSheetDeputy.save();
+    await partyPidc.save();
+    await partyCst.save();
+    await partyJpc.save();
+    await partyFdt.save();
+    await partyFizq.save();
 
     if (notes.length > 480) {
         notes = notes.substring(0, 480); //MAX LENGTH HARDC. :p
     }
 
+    //-------------- NO VA
     //if length is 0, it's not valid.
     //let isValid = (requestPartiesArr.length > 0) ? true : false;
     //check all params are positives, if one is not, it's not valid.
@@ -439,20 +508,21 @@ votingTableController.scrutiny = async (req, res, next) => {
     /*scrutiniesArr.forEach(scr => { console.log(`scrutinypartyId: ${scr.scrutinypartyId} : quantity: ${scr.quantity} : votingtableId: ${scr.votingtableId}`);
     });*/
     //await Scrutiny.bulkCreate(scrutiniesArr, { transaction });
+    // ----------------------------
 
     console.log(`notas: ${notes}`);
-    //votingTable.isOpen = false;
+    //votingTable.isOpen = false; ---------
     votingTable.notes = notes;
-    // await votingTable.save({ transaction });
+    // await votingTable.save({ transaction }); -------
     await votingTable.save();
-    // always call commit at the end
-    // await transaction.commit();
+    // always call commit at the end--------------
+    // await transaction.commit();-------------
 
     res.json({ message: 'Datos cargados. Mesa cerrada.' });
-    // } catch (e) {
-    //     // always rollback 
-    //     await transaction.rollback();
-    //     next(e);
+    // } catch (e) {-------------
+    //     // always rollback -------------
+    //     await transaction.rollback();------------
+    //     next(e);------------
     // }
 };
 
