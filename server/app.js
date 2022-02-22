@@ -11,7 +11,7 @@ const app = express();
 require('./models'); //calls index.js to setup DB.
 require('./config/passport');
 
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV || 'test';
 const config = require('./config/config.json')[env];
 console.log(`Environment: ${env}`);
 

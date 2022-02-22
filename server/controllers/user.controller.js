@@ -4,6 +4,7 @@ const Config = require('../models/config');
 const Sequelize = require('../models').Sequelize;
 const Voter = require('../models/voter');
 const VotingTable = require('../models/voting-table');
+const Friend = require('../models/friend');
 
 
 
@@ -326,6 +327,7 @@ userController.createUser = async (req, res, next) => {
         const phone = req.body.phone;
         const email = req.body.email;
         const password = req.body.password;
+        let isFriend = true;
 
         console.log(`Create User ${nationalId}`);
 
@@ -350,6 +352,11 @@ userController.createUser = async (req, res, next) => {
             const err = Error('DNI no encontrado en padrón'); err.status = 422;
             throw err;
         }
+        const friend = await Friend.findOne({ where: { "citizenId": citizen.id } });
+        console.log("friend", friend)
+        if (!friend) {
+            isFriend = false;
+        }
 
         const config = await Config.findOne({ where: { "code": "DEFAULT_HELP_PHONE" } });
 
@@ -361,6 +368,7 @@ userController.createUser = async (req, res, next) => {
         user.email = email;
         user.helpPhone = (config) ? config.value : '+5411111111';
         user.approved = true;
+        user.isFriend = isFriend;
 
         //passwordChecker.checkPassword(password);
         user.setPassword(password);
