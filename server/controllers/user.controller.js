@@ -189,6 +189,7 @@ userController.editUser = async (req, res, next) => {
 userController.login = async (req, res, next) => {
     console.log("dni request",req.body.nationalId)
     console.log("pass", req.body.password)
+
     try {
 
         if (!req.body.nationalId || !req.body.password || req.body.nationalId.trim() == '') {
@@ -206,7 +207,6 @@ userController.login = async (req, res, next) => {
                 return res.status(422).json(info);
             }
            // console.log("inside info", info.votingTable);
-
             
             
             //const tableInfo = info.votingTable;

@@ -1,5 +1,6 @@
 const Friend = require('../models/friend');
 const Citizen = require('../models/citizen');
+const User = require('../models/user');
 const friendController = {};
 
 friendController.getFriends = async (req, res, next) =>{
@@ -18,8 +19,10 @@ friendController.getFriends = async (req, res, next) =>{
 
 friendController.addFriend = async (req, res, next)=>{
     try{
-        const nationalId = req.body.nationalId;
-        const userId = req.payload.id;
+        const nationalId = req.body.nationalId; // dni de friend agregado
+        const userId = req.payload.id; // id del usuario que agrega al friend
+        const user = await User.findOne({where:{"nationalId": req.body.nationalId}});
+
 
         console.log(`Add Friend: DNI:${nationalId} and userId:${userId}`);
 
@@ -34,6 +37,8 @@ friendController.addFriend = async (req, res, next)=>{
             const err = Error('No encontrado en padrón.'); err.status = 422;
             throw err;
         }
+
+        // user.isFriend = true;
         
         let friend = await Friend.findOne({where: {"userId":userId, "citizenId":citizen.id}});
         if(!friend){
@@ -42,7 +47,11 @@ friendController.addFriend = async (req, res, next)=>{
             friend.email = req.body.email;
             friend.userId = userId;
             friend.citizenId = citizen.id;            
-            await friend.save(); //it modifies the friend.
+            await friend.save(); 
+            if (user){
+                user.isFriend = true;
+                await user.save();
+            }//it modifies the friend.
         }else{
             //console.log('Friend already exists.');
             const err = Error('Amigo existente.'); err.status = 422;
@@ -57,6 +66,7 @@ friendController.addFriend = async (req, res, next)=>{
 
         //console.log(friend);
         res.json(friend);
+        
     }catch(e){ 
         next(e);
     }
