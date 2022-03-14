@@ -6,7 +6,7 @@ router.get('/', auth.required, clientController.getClients);
 router.get('/:id', auth.required, clientController.getClient);
 router.put('/:id', auth.required, clientController.editAvalClient);
 router.post('/fetch', auth.required, clientController.fetchClient);
-router.post('/fetch_by_partner', auth.required, clientController.fetchClientByPartnerNumber);
+//router.post('/fetch_by_partner', auth.required, clientController.fetchClientByPartnerNumber);
 router.delete('/:id', auth.required, clientController.deleteClient);
 
 module.exports = router;

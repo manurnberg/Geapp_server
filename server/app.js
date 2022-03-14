@@ -11,16 +11,18 @@ const app = express();
 require('./models'); //calls index.js to setup DB.
 require('./config/passport');
 
-const env = process.env.NODE_ENV || 'test';
+const env = process.env.NODE_ENV || 'development';
 const config = require('./config/config.json')[env];
 console.log(`Environment: ${env}`);
 
 const isProd = process.env.NODE_ENV === 'production';
 
 // Settings -----------------------------------------------------------------------
-process.env.TZ = 'GMT-3';
-app.set('tz', process.env.TZ || 'GMT-3');
-//console.log("TimeZone: " + process.env.TZ + " -> " + new Date());
+// process.env.TZ = 'GMT-3';
+process.env.TZ = 'America/Buenos_Aires';
+// app.set('tz', process.env.TZ || 'GMT-3');
+app.set('tz', process.env.TZ || 'America/Buenos_Aires');
+console.log("TimeZone: " + process.env.TZ + " -> " + new Date());
 app.set('port', process.env.PORT || 3000);
 
 // Middlewares(functions) ---------------------------------------------------------
