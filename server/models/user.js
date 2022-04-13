@@ -35,20 +35,7 @@ class User extends Sequelize.Model {
       exp: parseInt(exp.getTime() / 1000),
     }, config.jwtsecret);
   };
-  // function modified to ios version
-  generateJWT2 = function () {
-    var today = new Date();
-    var exp = new Date(today);
-    exp.setDate(today.getDate() + 60);
-  
-    return jwt.sign({
-      id: this.id,
-      email: this.email,
-      role: this.role,
-      isOwner: this.isOwner,
-      exp: parseInt(exp.getTime() / 1000),
-    }, config.jwtsecret);
-  };
+
   
   toAuthJSON = function () {
     return {
@@ -69,23 +56,6 @@ class User extends Sequelize.Model {
     };
   };
 
-  // functions modified to ios version
-  toAuthJSON2 = function () {
-    return {
-      id: this.id,
-      nationalId: this.nationalId,
-      first: this.first,
-      last: this.last,
-      helpPhone: this.helpPhone,
-      email: this.email,
-      phone: this.phone,
-      role: this.role,
-      approved: this.approved,
-      fiscal: this.fiscal,
-      isOwner: this.isOwner,
-      token: this.generateJWT2()
-    };
-  };
   
 }
 

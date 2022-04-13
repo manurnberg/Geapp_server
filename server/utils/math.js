@@ -14,7 +14,13 @@ math.diffInYearsFromToday = (dateString) => {
 
 math.getTimeStampDate = () => {
     let today = new Date();
-    return `${today.getFullYear()}-${today.getMonth()}-${today.getDate()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
+    today = convertTZ(today, "America/Buenos_Aires");
+
+    return `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
 };
+
+function convertTZ(date, tzString) {
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("es-AR", {timeZone: tzString}));   
+}
 
 module.exports = math;

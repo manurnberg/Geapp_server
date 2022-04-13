@@ -42,16 +42,13 @@ const Friend = require('./friend');
 const User = require('./user');
 const Voter = require('./voter');
 const VotingTable = require('./voting-table');
-const VotingTableSheet = require('./votingtable-result-sheet');
 
 
-//const VotingTableSheet = require('./votingtable_results_sheet');
-//const { citizenUpload, citizendupload } = require('../controllers/padron-import.controller');
 
 Friend.belongsTo(User);
 
 Citizen.hasMany(Friend);
-Friend.belongsTo(Citizen);
+Friend.belongsTo(Citizen,{targetKey:'nationalId', foreignKey:'nationalId'});
 
 Citizen.hasMany(Voter);
 Voter.belongsTo(Citizen);

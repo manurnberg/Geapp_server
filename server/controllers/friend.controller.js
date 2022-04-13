@@ -3,6 +3,8 @@ const Citizen = require('../models/citizen');
 const User = require('../models/user');
 const friendController = {};
 
+
+
 friendController.getFriends = async (req, res, next) =>{
     try{
         console.log(`Get Friends for userId: ${req.payload.id}`);
@@ -11,11 +13,18 @@ friendController.getFriends = async (req, res, next) =>{
             where:{"userId": req.payload.id},
             include:[Citizen]
         });
+        friends.forEach(element => {
+           console.log("friends", element.citizen.id);
+        });
+        
         res.json(friends);
+
     }catch(e){
         next(e);
     }
 };
+
+
 
 friendController.addFriend = async (req, res, next)=>{
     try{
@@ -40,13 +49,16 @@ friendController.addFriend = async (req, res, next)=>{
 
         // user.isFriend = true;
         
-        let friend = await Friend.findOne({where: {"userId":userId, "citizenId":citizen.id}});
+        let friend = await Friend.findOne({where: {"userId":userId, "nationalId": nationalId}});
+        console.log("friend-->", friend)
         if(!friend){
             friend = new Friend(); 
             friend.phone = req.body.phone;
             friend.email = req.body.email;
             friend.userId = userId;
-            friend.citizenId = citizen.id;            
+            friend.nationalId = citizen.nationalId;
+           // friend.citizenId = citizen.id; 
+           console.log('if not friend', friend)           
             await friend.save(); 
             if (user){
                 user.isFriend = true;
@@ -60,9 +72,13 @@ friendController.addFriend = async (req, res, next)=>{
         
         //call again to include citizen.
         friend = await Friend.findOne({
-            where: {"userId":userId, "citizenId":citizen.id},
+            where: {"userId": userId, "nationalId": citizen.nationalId},
             include:[Citizen]
-            });
+        });
+        // friend = await Friend.findOne({
+        //     where: {"userId":userId, "citizenId":citizen.id},
+        //     include:[Citizen]
+        //     });
 
         //console.log(friend);
         res.json(friend);

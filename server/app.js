@@ -16,6 +16,7 @@ const config = require('./config/config.json')[env];
 console.log(`Environment: ${env}`);
 
 const isProd = process.env.NODE_ENV === 'production';
+console.log("isProd: ", isProd);
 
 // Settings -----------------------------------------------------------------------
 // process.env.TZ = 'GMT-3';

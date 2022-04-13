@@ -6,7 +6,8 @@ Friend.init({
     name: {type: Sequelize.STRING, allowNull:true}, // ios app field 
     last_name: {type: Sequelize.STRING, allowNull:true}, // ios app field 
     phone: {type: Sequelize.STRING, allowNull:true },
-    email: {type: Sequelize.STRING, allowNull:false } // ios app field change to mandatory
+    email: {type: Sequelize.STRING, allowNull:false }, // ios app field change to mandatory
+    nationalId: {type: Sequelize.STRING, allowNull:false, references:{model:'citizens', key:'nationalId'}},
 },{sequelize, modelName: 'friend', paranoid:true});
 
 module.exports = Friend;
