@@ -61,9 +61,9 @@ class User extends Sequelize.Model {
 
 
 User.init({
-  nationalId: { type: Sequelize.STRING, allowNull: true, unique: true }, // se permite un DNI nulo
-  first: { type: Sequelize.STRING, allowNull: true },
-  last: { type: Sequelize.STRING, allowNull: true },
+  nationalId: { type: Sequelize.STRING, allowNull: false, unique: true }, // se permite un DNI nulo
+  first: { type: Sequelize.STRING, allowNull: false },
+  last: { type: Sequelize.STRING, allowNull: false },
   email: { type: Sequelize.STRING, allowNull: true},
   phone: {type: Sequelize.STRING, allowNull: true},
   helpPhone: {type: Sequelize.STRING, allowNull:true},

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule, CanActivate } from '@angular/router';
 import { TermsAndConditionsComponent } from './components/pages/terms-and-conditions/terms-and-conditions.component';
 import { PageNotFoundComponent } from './components/pages/page-not-found/page-not-found.component';
+import { ResetPasswordComponent } from './components/pages/reset-password/reset-password/reset-password.component';
 
 const routes: Routes = [
   //{path: '', redirectTo: '/auth/login', pathMatch: 'full'},
@@ -10,7 +11,9 @@ const routes: Routes = [
   {path:'users', loadChildren: './user/user.module#UserModule'},
   {path: 'tyc', component: TermsAndConditionsComponent},
   {path: 'employees', loadChildren: './employee/employee.module#EmployeeModule'},
-  {path: '**', component: PageNotFoundComponent}
+  {path: 'resetpassword', component: ResetPasswordComponent},
+  {path: '**', component: PageNotFoundComponent},
+  
 ];
 
 

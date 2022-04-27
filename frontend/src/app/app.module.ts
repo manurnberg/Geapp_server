@@ -5,7 +5,7 @@ import { MaterialModule } from "./material/material.module";
 
 import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -14,13 +14,15 @@ import { TermsAndConditionsComponent } from './components/pages/terms-and-condit
 import { PageNotFoundComponent } from './components/pages/page-not-found/page-not-found.component';
 
 import { HttpErrorInterceptor } from "./common/http-error.interceptor";
+import { ResetPasswordComponent } from './components/pages/reset-password/reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     TermsAndConditionsComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -28,7 +30,8 @@ import { HttpErrorInterceptor } from "./common/http-error.interceptor";
     MaterialModule,
     FormsModule,
     HttpClientModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule,
     
   ],
   providers: [

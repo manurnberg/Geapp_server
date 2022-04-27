@@ -11,12 +11,17 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MaterialModule } from '../material/material.module';
 import { UserService } from './services/user.service';
 import { HttpErrorInterceptor } from '../common/http-error.interceptor';
-import { MatFormField } from '@angular/material';
+
 
 
 
 @NgModule({
-  declarations: [UserListComponent, UserDetailComponent, UserListItemComponent, UserListFilterComponent],
+  declarations: [
+    UserListComponent,
+    UserDetailComponent,
+    UserListItemComponent,
+    UserListFilterComponent,
+   ],
   imports: [
     CommonModule,
     FormsModule,
