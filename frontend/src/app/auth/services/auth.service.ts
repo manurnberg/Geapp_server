@@ -4,7 +4,7 @@ import { User } from '../../models/user';
 import { tap } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { JwtHelperService } from "@auth0/angular-jwt";
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from "../../../environments/environment";
 import { NotificationService } from 'src/app/services/notification.service';
 
@@ -18,7 +18,10 @@ export class AuthService {
   private token: string;
   private jwtHelper:JwtHelperService;
 
-  constructor(private httpClient: HttpClient, private router:Router, private notificationService:NotificationService) { 
+  constructor(private httpClient: HttpClient,
+    private router:Router,
+    private notificationService:NotificationService,
+    private activedRoute: ActivatedRoute)  { 
       //this is not injectable.
       this.jwtHelper = new JwtHelperService();
     }
@@ -71,11 +74,15 @@ export class AuthService {
   }
 
   private getToken():string {
+    
     if(!this.token){
       this.token = localStorage.getItem(this.TOKEN_NAME);
     }
     return this.token;
   }
+
+  //   this.activatedRoute.queryParams.subscribe(params => {
+  //     const token = params["token"];
 
 
   /* NOT IN USE */

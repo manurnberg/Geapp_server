@@ -37,7 +37,7 @@
     "username": "geapp_prod",
     "password": "SCPLgeapp1234", 
     "database": "geapp_prod",
-    "host": "ec2-18-229-143-221.sa-east-1.compute.amazonaws.com",
+    "host": "localhost",
     "dialect": "mysql",
     "operatorsAliases": 0, 
     "pool":{

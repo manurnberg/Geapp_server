@@ -11,11 +11,12 @@ friendController.getFriends = async (req, res, next) => {
         console.log(`Get Friends for userId: ${req.payload.id}`);
 
         const friends = await Friend.findAll({
-            where: { "userId": req.payload.id },
+            where: { "userId": req.payload.id, "enable": true },
             include: [Citizen]
         });
         friends.forEach(element => {
             console.log("friends", element.citizen.id);
+            console.log("element", element.toJSON());
         });
 
         res.json(friends);
@@ -92,12 +93,29 @@ friendController.addFriend = async (req, res, next) => {
     }
 };
 
+friendController.updateFriend = async (req, res, next) => {
+    try {
+        const friendId = req.params.id;
+        console.log(`Update Friend: Friend Id:${friendId} and userId:${req.payload.id}`);
+
+        const editedFriend = await Friend.update({
+            "phone": req.body.phone,
+            "email": req.body.email
+        }, { where: { "id": friendId, "userId": req.payload.id } });
+
+        res.json({ message: 'Amigo actualizado' });
+    } catch (e) {
+        next(e);
+    }
+}
+
 friendController.deleteFriend = async (req, res, next) => {
     try {
         const friendId = req.params.id;
         console.log(`Delete Friend: Friend Id:${friendId} and userId:${req.payload.id}`);
 
-        const d = await Friend.destroy({ where: { "id": friendId, "userId": req.payload.id } });
+        const friend = await Friend.destroy({ where: { "id": friendId, "userId": req.payload.id } });
+        friend.enable = false;
 
         res.json({ message: 'Amigo eliminado' });
     } catch (e) {

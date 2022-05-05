@@ -2,6 +2,7 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const env = process.env.NODE_ENV || 'development';
 const config = require('../config/config.json')[env];
+const template = require('./reset-password-template');
 
 function createTransporter(user){
 
@@ -23,8 +24,7 @@ function createTransporter(user){
         to: user.email,
         subject:'Recuperar contraseña',
         text:'Sigue el link para resetear tu contraseña',
-        html: `<p>Sigue el siguiente enlace para generar una nueva contraseña</p>
-        <a href="http://localhost:3000/reset/${token}">Resetear contraseña</a>`,
+        html: template(user.first,token)
 
         
     }
@@ -46,7 +46,10 @@ function createTransporter(user){
 
 function generateJWT(user){
     const token = jwt.sign({
-        id: user.id}, config.jwtsecret, {expiresIn: '2h'}); 
+        id: user.id,
+        nationalId: user.nationalId,
+        role: user.role,
+        isOwner: user.isOwner}, config.jwtsecret, {expiresIn: '2h'}); 
         console.log("token", token);
     return token;
 }

@@ -75,6 +75,7 @@ userController.getUser = async (req, res, next) => {
     }
 };
 
+
 userController.editUser = async (req, res, next) => {
     try {
         const userRole = req.payload.role;
@@ -90,10 +91,10 @@ userController.editUser = async (req, res, next) => {
         console.log(`Edit user: ${userId} - who is editing?:${req.payload.id}`);
 
         //I can trust in this 
-        if (userRole !== 'ADMIN') {
-            const err = Error('No tiene privilegios.'); err.status = 403;
-            throw err;
-        }
+        // if (userRole !== 'ADMIN') {
+        //     const err = Error('No tiene privilegios.'); err.status = 403;
+        //     throw err;
+        // }
 
         const userToEdit = await User.findOne({ where: { "id": userId } });
         if (!userToEdit) {
@@ -292,7 +293,7 @@ userController.createUser = async (req, res, next) => {
             const err = Error('DNI no encontrado en padrón'); err.status = 422;
             throw err;
         }
-        const friend = await Friend.findOne({ where: { "citizenId": citizen.id } });
+        const friend = await Friend.findOne({ where: { "nationalId": nationalId } });
         console.log("friend", friend)
         if (!friend) {
             isFriend = false;

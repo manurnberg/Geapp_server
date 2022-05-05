@@ -5,18 +5,26 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { environment } from "../../environments/environment";
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { User } from '../models/user';
+import { JwtHelperService } from '@auth0/angular-jwt';
+
 
 @Injectable({
     providedIn: 'root'
 })
 export class ResetPasswordService {
-    RESET_API_URL: string = environment.baseUrl + '/api/user/';
+    RESET_API_URL: string = environment.baseUrl + '/api/user';
+    jwtHelper: JwtHelperService;
+    token: string;
     // private dataSource = new BehaviorSubject<any>({});
 
     // dataSource$ = this.dataSource.asObservable();
 
 
-    constructor(private http: HttpClient, private authService: AuthService) { }
+    constructor(private http: HttpClient,
+        private authService: AuthService) {
+
+
+    }
 
     //TODO: this form might be on the component and the data must be sent through the dialog.
     form: FormGroup = new FormGroup({
@@ -33,12 +41,12 @@ export class ResetPasswordService {
         });
     }
 
-    
+
 
     populateForm(user) {
-       
+
         user.password = '';
-        
+
         this.form.setValue(user);
     }
 
@@ -48,17 +56,28 @@ export class ResetPasswordService {
     }
 
 
-    updateUserPassword(user: User): Observable<any> {
-        if (user.password !== undefined && user.password.trim() == '' && this.form.get('rePassword').value !== undefined && this.form.get('rePassword').value.trim() == '' && this.form.get('rePassword').value !== user.password ) {
-            user.password = undefined;
+    updateUserPassword(user){
+        if (this.form.controls['password'].value !== undefined &&
+            this.form.controls['rePassword'].value !== undefined &&
+            this.form.controls['password'].value === this.form.controls['rePassword'].value) {
+            console.log("pass -->" + this.form.controls["password"].value);
+            console.log("repass -->" + this.form.controls['rePassword'].value);
+            user.password = this.form.controls["password"].value;
+            return this.http.put(`${this.RESET_API_URL}/${user.id}`, user, { headers: this.getHttpAuthHeader() });
+        }else{
+            console.log("some variable fail");
+            return
         }
-        const url = `${this.RESET_API_URL}/${user.id}`;
-        return this.http.put(url, user, { headers: this.getHttpAuthHeader() });
+
+        // const url = `${this.RESET_API_URL}/${user.id}`;
+        // return this.http.put(url, user, { headers: this.getHttpAuthHeader() });
     }
 
     private getHttpAuthHeader(): HttpHeaders {
         return this.authService.getHttpHeader(true);
     }
+
+
 
     /*deleteUser(user: User): Observable<User> {
       const url = `${this.usersUrl}/${user.id}`;

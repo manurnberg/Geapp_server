@@ -11,7 +11,7 @@ const routes: Routes = [
   {path:'users', loadChildren: './user/user.module#UserModule'},
   {path: 'tyc', component: TermsAndConditionsComponent},
   {path: 'employees', loadChildren: './employee/employee.module#EmployeeModule'},
-  {path: 'resetpassword', component: ResetPasswordComponent},
+  {path: 'reset/:token', component: ResetPasswordComponent},
   {path: '**', component: PageNotFoundComponent},
   
 ];
