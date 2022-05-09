@@ -44,9 +44,11 @@ app.use('/api/ping', require('./routes/ping.routes'));
 
 // FOR ANGULAR: Catch all other routes and return the index file
 app.get('/', (req, res) => {
+
     res.sendFile(path.join(__dirname, '../frontend/dist/frontend/index.html'));
-    
-  });
+
+});
+
 
 //Others:
 if (!isProd) {
@@ -55,8 +57,13 @@ if (!isProd) {
 
 //exec if there is no route.
 app.use((req, res, next) => {
-    var err = new Error('API Not Found.');
-    err.status = 404;
+    if (isProd && req.originalUrl.includes('/reset/')) {
+        return res.sendFile(path.join(__dirname, '../frontend/dist/frontend/index.html'));
+    } else {
+        var err = new Error('API Not Found.');
+        err.status = 404;
+    }
+
     next(err);
 });
 

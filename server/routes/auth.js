@@ -7,7 +7,7 @@ function getTokenFromHeader(req) {
     console.log('token from header');
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token' ||
         req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-            console.log("inside gettoken if statement");
+            console.log("inside gettoken if statement", req.headers.authorization.split(' ')[1]);
         return req.headers.authorization.split(' ')[1];
     }
 

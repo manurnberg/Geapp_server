@@ -50,7 +50,7 @@ function generateJWT(user){
         nationalId: user.nationalId,
         role: user.role,
         isOwner: user.isOwner}, config.jwtsecret, {expiresIn: '2h'}); 
-        console.log("token", token);
+        console.log("token", token, " jwtsecret", config.jwtsecret);
     return token;
 }
 

@@ -52,6 +52,7 @@ export class ResetPasswordService {
 
 
     getUser(id: number): Observable<User> {
+      //  console.log("getUser on reset password service");
         return this.http.get<User>(`${this.RESET_API_URL}/${id}`, { headers: this.getHttpAuthHeader() });
     }
 
@@ -60,10 +61,13 @@ export class ResetPasswordService {
         if (this.form.controls['password'].value !== undefined &&
             this.form.controls['rePassword'].value !== undefined &&
             this.form.controls['password'].value === this.form.controls['rePassword'].value) {
-            console.log("pass -->" + this.form.controls["password"].value);
-            console.log("repass -->" + this.form.controls['rePassword'].value);
+           // console.log("pass -->" + this.form.controls["password"].value);
+          //  console.log("repass -->" + this.form.controls['rePassword'].value);
             user.password = this.form.controls["password"].value;
-            return this.http.put(`${this.RESET_API_URL}/${user.id}`, user, { headers: this.getHttpAuthHeader() });
+            const token = localStorage.getItem('TOKEN');
+            // return this.http.put(`${this.RESET_API_URL}/${user.id}`, user, { headers: this.getHttpAuthHeader() });
+            return this.http.put(`${this.RESET_API_URL}/reset/${user.id}`, user, { headers:{'Content-Type': 'application/json', 'Authorization': 'Bearer '+token}});
+            
         }else{
             console.log("some variable fail");
             return
@@ -74,6 +78,7 @@ export class ResetPasswordService {
     }
 
     private getHttpAuthHeader(): HttpHeaders {
+       // console.log("getHttpAuthHeader on reset password service");
         return this.authService.getHttpHeader(true);
     }
 

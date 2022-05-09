@@ -3,9 +3,9 @@
     <span>GEAPP</span>
     <span class="fill-remaining-space"></span>
     <a mat-button routerLink="/tyc">Terminos y condiciones</a>
-    <a mat-button *ngIf="isAuthenticated()" routerLink="/users">Usuarios</a>
-    <a mat-button *ngIf="isAuthenticated()" (click)="logout()">Salir</a>
-    <a mat-button *ngIf="!isAuthenticated()" routerLink="/auth/login">Ingresar</a>
+    <a mat-button id="usersBar" *ngIf="isAuthenticated()" routerLink="/users">Usuarios</a>
+    <a mat-button id="logoutBar" *ngIf="isAuthenticated()" (click)="logout()">Salir</a>
+    <!-- <a mat-button *ngIf="!isAuthenticated()" routerLink="/auth/login">Ingresar</a> -->
 </mat-toolbar>
 
 <!-- 

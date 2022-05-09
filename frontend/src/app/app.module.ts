@@ -12,9 +12,9 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/layout/header/header.component';
 import { TermsAndConditionsComponent } from './components/pages/terms-and-conditions/terms-and-conditions.component';
 import { PageNotFoundComponent } from './components/pages/page-not-found/page-not-found.component';
-
 import { HttpErrorInterceptor } from "./common/http-error.interceptor";
 import { ResetPasswordComponent } from './components/pages/reset-password/reset-password/reset-password.component';
+import { ResetPassConfirmComponent } from './components/pages/reset-pass-confirm/reset-pass-confirm.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +22,8 @@ import { ResetPasswordComponent } from './components/pages/reset-password/reset-
     HeaderComponent,
     TermsAndConditionsComponent,
     PageNotFoundComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    ResetPassConfirmComponent
   ],
   imports: [
     BrowserModule,

@@ -22,7 +22,7 @@ userController.getUsers = async (req, res, next) => {
 
         const usersAndCount = await User.findAndCountAll(
             {
-                attributes: ['id', 'nationalId', 'first', 'last', 'email', 'phone', 'helpPhone', 'role', 'approved','fiscal','table', 'createdAt'],
+                attributes: ['id', 'nationalId', 'first', 'last', 'email', 'phone', 'helpPhone', 'role', 'approved', 'fiscal', 'table', 'createdAt'],
                 where: {
                     [Sequelize.Op.or]: [
                         { nationalId: { [Sequelize.Op.like]: `${filter}%` } },
@@ -43,6 +43,7 @@ userController.getUsers = async (req, res, next) => {
 };
 
 userController.getUser = async (req, res, next) => {
+    console.log("get user api", req.params.id)
     try {
         const userRole = req.payload.role;
         let userId = req.params.id;
@@ -56,18 +57,20 @@ userController.getUser = async (req, res, next) => {
         if (!user) return res.sendStatus(401);
 
         const usersVotingTable = await VotingTable.findOne(
-            { include: [{ 
-                model: Voter, 
-                include: [
-                    { model: Citizen, 
-                        where: { "nationalId": req.payload.nationalId } 
-                    }] 
-                }] 
+            {
+                include: [{
+                    model: Voter,
+                    include: [
+                        {
+                            model: Citizen,
+                            where: { "nationalId": req.payload.nationalId }
+                        }]
+                }]
             });
-        if(usersVotingTable){
+        if (usersVotingTable) {
             console.log("User voting table", usersVotingTable)
         }
-        
+
 
         return res.json(user.toAuthJSON());
     } catch (e) {
@@ -84,9 +87,9 @@ userController.editUser = async (req, res, next) => {
         const password = req.body.password;
         const approved = req.body.approved;
         const fiscal = req.body.fiscal;
-        
 
-        
+
+
 
         console.log(`Edit user: ${userId} - who is editing?:${req.payload.id}`);
 
@@ -103,7 +106,7 @@ userController.editUser = async (req, res, next) => {
         }
 
         const userByid = await User.findOne({
-            where: {'id':userId}
+            where: { 'id': userId }
         })
 
         const userCitizen = await Citizen.findOne({
@@ -112,71 +115,76 @@ userController.editUser = async (req, res, next) => {
             //   include: [{model: VotingTable, where: { "isOpen": true }
             //   }]
             // }]
-          });
-          const voterToEdit = await Voter.findOne({ where: { "citizenId": userCitizen.id } });
-          if (!voterToEdit) {
-              const err = Error('Votante no encontrado.'); err.status = 422;
-              throw err;
-          }
-      
-          console.log("User citizen-->>", userCitizen.id)
-      
-          const userVotingTableId = await Voter.findOne({
-            where: {'citizenId': userCitizen.id},
-          });
-      
-          console.log("user voting table id  --->>" ,userVotingTableId.votingtableId.toString())
-          const vtId = userVotingTableId.votingtableId;
-      
-          const userVTable = await VotingTable.findOne({
-            where: {'table': vtId},
-          });
+        });
+        const voterToEdit = await Voter.findOne({ where: { "citizenId": userCitizen.id } });
+        if (!voterToEdit) {
+            const err = Error('Votante no encontrado.'); err.status = 422;
+            throw err;
+        }
 
-          console.log("user voting table table-->", userVTable.table);
+        console.log("User citizen-->>", userCitizen.id)
+
+        const userVotingTableId = await Voter.findOne({
+            where: { 'citizenId': userCitizen.id },
+        });
+
+        console.log("user voting table id  --->>", userVotingTableId.votingtableId.toString())
+        const vtId = userVotingTableId.votingtableId;
+
+        const userVTable = await VotingTable.findOne({
+            where: { 'table': vtId },
+        });
+
+        console.log("user voting table table-->", userVTable.table);
 
 
 
         //passwordChecker.checkPassword(password);
-        let fieldsObjVoter = { fields: ['isOwner']};
+        let fieldsObjVoter = { fields: ['isOwner'] };
         let fieldsObj = { fields: ['approved'] };
         if (approved !== undefined) {
+            console.log("user approved", approved);
             userToEdit.approved = approved;
         }
-         
+
         if (fiscal !== undefined && fiscal !== false) {
+            console.log("user fiscal", fiscal);
             userToEdit.fiscal = fiscal;
             userToEdit.table = userVTable.table
-            fieldsObj = {fields: ['fiscal','table']}
+            fieldsObj = { fields: ['fiscal', 'table'] }
 
 
         }
-        if(fiscal == false){ 
+        if (fiscal == false) {
+            console.log("not fiscal");
             userToEdit.fiscal = null;
             userToEdit.table = null;
-            fieldsObj = {fields: ['fiscal','table']};
+            fieldsObj = { fields: ['fiscal', 'table'] };
             voterToEdit.isOwner = false;
-            fieldsObjVoter = {fields: ['isOwner']};
+            fieldsObjVoter = { fields: ['isOwner'] };
         }
-        
 
-        if(fiscal){
+
+        if (fiscal) {
+            console.log("fiscal");
             voterToEdit.isOwner = true
-            fieldsObjVoter = {fields: ['isOwner']}
+            fieldsObjVoter = { fields: ['isOwner'] }
         }
 
 
         if (password !== undefined) {
+            console.log("first password", password)
             userToEdit.setPassword(password);
             fieldsObj = { fields: ['salt', 'hash', 'approved', 'fiscal', 'table'] };
         }
 
         await userToEdit.save(fieldsObj);
         await voterToEdit.save(fieldsObjVoter);
-        const status = { status: 'Usuario actualizado correctamente.'};
-        const table = {'nationalId':userByid.nationalId,'table': userVTable.table};
+        const status = { status: 'Usuario actualizado correctamente.' };
+        const table = { 'nationalId': userByid.nationalId, 'table': userVTable.table };
         console.log("table print--->>", table)
 
-        const response = Object.assign(status,table)
+        const response = Object.assign(status, table)
 
         console.log("response from edit -->>", response)
 
@@ -188,7 +196,7 @@ userController.editUser = async (req, res, next) => {
 };
 
 userController.login = async (req, res, next) => {
-    console.log("dni request",req.body.nationalId)
+    console.log("dni request", req.body.nationalId)
     console.log("pass", req.body.password)
 
     try {
@@ -204,20 +212,20 @@ userController.login = async (req, res, next) => {
             if (err) { return next(err); }
 
             if (!user) {
-                console.log("error--->>>",res.status(422))
+                console.log("error--->>>", res.status(422))
                 return res.status(422).json(info);
             }
-           // console.log("inside info", info.votingTable);
-            
-            
+            // console.log("inside info", info.votingTable);
+
+
             //const tableInfo = info.votingTable;
             const userToJson = user.toAuthJSON();
-            
+
 
             //const mergeObject = Object.assign(userToJson,tableInfo);
             //console.log("usr to json merge", mergeObject);
-            
-            user.token = user.generateJWT();  
+
+            user.token = user.generateJWT();
             console.log("user token--->", user.token)
             return res.json(userToJson);
         })(req, res, next);
@@ -229,12 +237,14 @@ userController.login = async (req, res, next) => {
 
 
 userController.sendPasswordReset = async (req, res, next) => {
-    const {nationalId, email} = req.body;
-    console.log("nationalId",nationalId, "email", email)
+    const { nationalId, email } = req.body;
+    console.log("nationalId", nationalId, "email", email)
     try {
         const user = await User.findOne({
             where: {
-                nationalId: nationalId}});
+                nationalId: nationalId
+            }
+        });
         if (!user) {
             const err = Error('Usuario no encontrado.'); err.status = 422;
             throw err;
@@ -245,10 +255,10 @@ userController.sendPasswordReset = async (req, res, next) => {
         }
         const transporter = require('../utils/email-transporter');
         const response = await transporter(user)
-            
+
         return await res.status(200).json(response);
 
-        
+
 
     } catch (e) {
         next(e);
@@ -257,7 +267,36 @@ userController.sendPasswordReset = async (req, res, next) => {
 }
 
 userController.resetPassword = async (req, res, next) => {
-    console.log("reset password", req.params.token)
+    const userId = req.params.id;
+    const password = req.body.password;
+    try {
+
+        const userToEdit = await User.findOne({ where: { "id": userId } });
+        if (!userToEdit) {
+            const err = Error('Usuario no encontrado.'); err.status = 422;
+            throw err;
+        }
+
+        if (password !== undefined) {
+            console.log("first password", password)
+            userToEdit.setPassword(password);
+            userNewpass = { fields: ['salt', 'hash'] };
+        }
+
+        await userToEdit.save(userNewpass);
+        const status = { status: 'Usuario actualizado correctamente.' };
+
+
+        const response = Object.assign(status)
+
+        console.log("response from edit -->>", response)
+
+        // res.json({ status: 'Usuario actualizado correctamente.'});
+        return res.json(response);
+    } catch (e) {
+        next(e);
+    }
+
 }
 
 
@@ -330,6 +369,9 @@ userController.createUser = async (req, res, next) => {
 userController.deleteUser = async (req, res) => {
     const { id } = req.params;
     console.log(id);
+    const user = await User.findOne({ where: { "id": id } });
+    user.enable = false;
+    user.save();
     //updated the user.
     //await User.findByIdAndUpdate(id, {deleted: true}, {new: false});
 

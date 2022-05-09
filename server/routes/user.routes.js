@@ -9,7 +9,7 @@ router.post('/login', userController.login);
 router.post('/', userController.createUser);
 router.put('/:id', userController.deleteUser);
 router.post('/reset', userController.sendPasswordReset);
-router.put('/reset/:id', userController.resetPassword);
+router.put('/reset/:id',auth.required, userController.resetPassword);
 
 
 module.exports = router;

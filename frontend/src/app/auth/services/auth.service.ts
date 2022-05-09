@@ -66,15 +66,18 @@ export class AuthService {
   }
 
   getHttpHeader(isAuth:boolean):HttpHeaders{
+   // console.log("getHttpHeader on auth service");
     const token = this.getToken();
     if(isAuth && token){
+     // console.log("isAuth and token");
       return new HttpHeaders({'Content-Type': 'application/json', 'Authorization': 'Bearer '+ token });
     }  
+    //console.log("!isAuth and no token");
     return new HttpHeaders({'Content-Type': 'application/json'});
   }
 
   private getToken():string {
-    
+   // console.log("getToken on auth service");
     if(!this.token){
       this.token = localStorage.getItem(this.TOKEN_NAME);
     }
