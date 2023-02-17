@@ -131,7 +131,7 @@ function createTransporter(user_email, user_name) {
         secure: false,
         auth: {
             user: 'geapp@coinpasrl.net',
-            pass: 'xsw2zaq1_'
+            pass: 'FoG@@2022'
         }
 
     })

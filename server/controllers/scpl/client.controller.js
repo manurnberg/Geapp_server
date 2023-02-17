@@ -1,5 +1,6 @@
 const Client            = require('../../models/scpl-client');
-const math              = require('../../utils/math'); 
+const math              = require('../../utils/math');
+const api = require('../scpl/client.api.controller')
 const clientController  = {};
 
 clientController.getClients = async (req, res, next) => {
@@ -81,6 +82,7 @@ clientController.editAvalClient = async (req, res, next) => {
         console.log("time stamp date: ", clientToEdit.sign_date)
 
         await clientToEdit.save(fieldsObj);
+        await api.sendReferredId(clientId);
 
         res.json({status: 'Aval Firmado con Exito!'});
 
