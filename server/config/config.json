@@ -20,7 +20,7 @@
     "filepath": "/home/ec2-user/geapp/files/test",
     "username": "Geapp_prod_trelew",
     "password": "geapp@trelew",
-    "database": "",
+    "database": "geapp_trelew",
     "host": "ec2-54-233-90-85.sa-east-1.compute.amazonaws.com",
     "dialect": "mysql",
     "operatorsAliases": 0,
