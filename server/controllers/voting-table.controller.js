@@ -220,6 +220,7 @@ votingTableController.scrutinyImage = async (req, res, next) => {
     try {
         const userNationalId = req.payload.nationalId;
         const isOwner = req.payload.isOwner;
+        console.log('inside scrutinyImage');
         // const effectiveVoters = req.body.effectiveVoters;
         // const votesInBallotBox = req.body.votesInBallotBox;
         // const identityContestvotes = req.body.identityContestvotes;
@@ -237,8 +238,14 @@ votingTableController.scrutinyImage = async (req, res, next) => {
             where: { 'nationalId': userNationalId }
         })
 
+        console.log('user -->', user)
+
         const votingTableId = user.table
+
+        console.log('votingTableId-->',votingTableId)
         const newPathAndName = config.filepath + '/' + votingTableId + dateformat(new Date(), "_yy_mm_dd_HH_MM_ss_") + req.file.originalname;
+
+        console.log('newPathName', newPathAndName)
         fs.rename(req.file.path, newPathAndName, (err) => {
             if (err) { console.log(err); }
             console.log('Scrutiny file saved.');
@@ -309,138 +316,138 @@ votingTableController.scrutiny = async (req, res, next) => {
     // try {
     // Unmanaged Transaction
     //transaction = await sequelize.transaction();
-    const formdata = JSON.stringify(req.body.formdata);
-    const formcst = JSON.stringify(req.body.formcst);
-    const jsonFormCst = JSON.parse(formcst);
-    console.log ('FORM -------->' + jsonFormCst.nameParty);
+    // const formdata = JSON.stringify(req.body.formdata);
+    // const formcst = JSON.stringify(req.body.formcst);
+    // const jsonFormCst = JSON.parse(formcst);
+    // console.log ('FORM -------->' + jsonFormCst.nameParty);
 
-    const formpidc = JSON.stringify(req.body.formpidc);
-    const jsonFormPidc = JSON.parse(formpidc);
+    // const formpidc = JSON.stringify(req.body.formpidc);
+    // const jsonFormPidc = JSON.parse(formpidc);
     
-    const formfdt = JSON.stringify(req.body.formfdt);
-    const jsonFormFdt = JSON.parse(formfdt);
+    // const formfdt = JSON.stringify(req.body.formfdt);
+    // const jsonFormFdt = JSON.parse(formfdt);
 
-    const formjpc = JSON.stringify(req.body.formjpc);
-    const jsonFormJpc = JSON.parse(formjpc);
+    // const formjpc = JSON.stringify(req.body.formjpc);
+    // const jsonFormJpc = JSON.parse(formjpc);
 
-    const formfizq = JSON.stringify(req.body.formfizq);
-    const jsonFormFizq = JSON.parse(formfizq);
+    // const formfizq = JSON.stringify(req.body.formfizq);
+    // const jsonFormFizq = JSON.parse(formfizq);
 
-    const formSenator = JSON.stringify(req.body.formsenator);
-    const jsonFormSenator = JSON.parse(formSenator);
+    // const formSenator = JSON.stringify(req.body.formsenator);
+    // const jsonFormSenator = JSON.parse(formSenator);
 
-    const formDeputy = JSON.stringify(req.body.formdeputy);
-    const jsonFormDeputy = JSON.parse(formDeputy);
+    // const formDeputy = JSON.stringify(req.body.formdeputy);
+    // const jsonFormDeputy = JSON.parse(formDeputy);
 
-    console.log(`Scrutiny Data ${JSON.stringify(req.body.formdata)}`);
-    const userNationalId = req.payload.nationalId;
-    const isOwner = req.payload.isOwner;
-    const requestPartiesArr = req.body.quantities;
-    console.log(`Scrutiny Data quant ${req.body.notes}`);
-    let notes = req.body.notes | '';
-    console.log(`Scrutiny Data: DNI User:${userNationalId}`);
+    // console.log(`Scrutiny Data ${JSON.stringify(req.body.formdata)}`);
+    // const userNationalId = req.payload.nationalId;
+    // const isOwner = req.payload.isOwner;
+    // const requestPartiesArr = req.body.quantities;
+    // console.log(`Scrutiny Data quant ${req.body.notes}`);
+    // let notes = req.body.notes | '';
+    // console.log(`Scrutiny Data: DNI User:${userNationalId}`);
 
-    const jsonData = JSON.parse(formdata);
+    // const jsonData = JSON.parse(formdata);
 
-    const effectiveVoters = parseInt(jsonData.effectiveVoters, 10);
-    const votesInBallotBox = parseInt(jsonData.votesInBallotBox);
-    const diference = parseInt(jsonData.diference);
+    // const effectiveVoters = parseInt(jsonData.effectiveVoters, 10);
+    // const votesInBallotBox = parseInt(jsonData.votesInBallotBox);
+    // const diference = parseInt(jsonData.diference);
 
-    console.log(`Scrutiny Data:effectivevoters:${effectiveVoters}`);
-    const datetime = new Date();
+    // console.log(`Scrutiny Data:effectivevoters:${effectiveVoters}`);
+    // const datetime = new Date();
 
 
-    const user = await User.findOne({
-        where: { 'nationalId': userNationalId }
-    })
+    // const user = await User.findOne({
+    //     where: { 'nationalId': userNationalId }
+    // })
 
-    const votingTableId = user.table
-    const votingTable = await VotingTable.findOne({
-        where: { 'id': votingTableId }
-    })
-    // const votingTable = await VotingTable.findByPk(votingTableId);
-    // votingTable.scrutinyPath = newPathAndName;
+    // const votingTableId = user.table
+    // const votingTable = await VotingTable.findOne({
+    //     where: { 'id': votingTableId }
+    // })
+    // // const votingTable = await VotingTable.findByPk(votingTableId);
+    // // votingTable.scrutinyPath = newPathAndName;
 
-    votingTable.effective_voters = effectiveVoters;
-        votingTable.votes_in_ballot_box=votesInBallotBox;
-        votingTable.diference=diference;
-    
-
-    const votingTableSheetSenator = VotingTableSheet.build({
-        votingtable_id: votingTableId,
-        identity_contest_votes: parseInt(jsonFormSenator.identityContestVotes),
-        null_votes: parseInt(jsonFormSenator.nullVotes),
-        appealed_votes: parseInt(jsonFormSenator.appealedVotes),
-        white_votes: parseInt(jsonFormSenator.whiteVotes),
-        total_votes: parseInt(jsonFormSenator.totalVotes),
-        datetime: new Date(),
-        electoral_command: parseInt(jsonFormSenator.electoralCommand),
-        type: jsonFormSenator.type,
-    })
-
-    const votingTableSheetDeputy = VotingTableSheet.build({
-        votingtable_id: votingTableId,
-        identity_contest_votes: parseInt(jsonFormDeputy.identityContestVotes),
-        null_votes: parseInt(jsonFormDeputy.nullVotes),
-        appealed_votes: parseInt(jsonFormDeputy.appealedVotes),
-        white_votes: parseInt(jsonFormDeputy.whiteVotes),
-        total_votes: parseInt(jsonFormDeputy.totalVotes),
-        datetime: new Date(),
-        electoral_command: parseInt(jsonFormDeputy.electoralCommand),
-        type: jsonFormDeputy.type,
-    })
-    const partyPidc = Party.build({
-        votingtable_id: votingTableId,
-        nameParty: jsonFormPidc.nameParty,
-        senator: parseInt(jsonFormPidc.votoSenador),
-        deputy: parseInt(jsonFormPidc.votoDeputy),
-    })
-    const partyCst = Party.build({
-        votingtable_id: votingTableId,
-        nameParty: jsonFormCst.nameParty,
-        senator: parseInt(jsonFormCst.votoSenador),
-        deputy: parseInt(jsonFormCst.votoDeputy),
-    })
-    const partyJpc = Party.build({
-        votingtable_id: votingTableId,
-        nameParty: jsonFormJpc.nameParty,
-        senator: parseInt(jsonFormJpc.votoSenador),
-        deputy: parseInt(jsonFormJpc.votoDeputy),
-    })
-    const partyFdt = Party.build({
-        votingtable_id: votingTableId,
-        nameParty: jsonFormFdt.nameParty,
-        senator: parseInt(jsonFormFdt.votoSenador),
-        deputy: parseInt(jsonFormFdt.votoDeputy),
-    })
-    const partyFizq = Party.build({
-        votingtable_id: votingTableId,
-        nameParty: jsonFormFizq.nameParty,
-        senator: parseInt(jsonFormFizq.votoSenador),
-        deputy: parseInt(jsonFormFizq.votoDeputy),
-    })
+    // votingTable.effective_voters = effectiveVoters;
+    //     votingTable.votes_in_ballot_box=votesInBallotBox;
+    //     votingTable.diference=diference;
     
 
+    // const votingTableSheetSenator = VotingTableSheet.build({
+    //     votingtable_id: votingTableId,
+    //     identity_contest_votes: parseInt(jsonFormSenator.identityContestVotes),
+    //     null_votes: parseInt(jsonFormSenator.nullVotes),
+    //     appealed_votes: parseInt(jsonFormSenator.appealedVotes),
+    //     white_votes: parseInt(jsonFormSenator.whiteVotes),
+    //     total_votes: parseInt(jsonFormSenator.totalVotes),
+    //     datetime: new Date(),
+    //     electoral_command: parseInt(jsonFormSenator.electoralCommand),
+    //     type: jsonFormSenator.type,
+    // })
+
+    // const votingTableSheetDeputy = VotingTableSheet.build({
+    //     votingtable_id: votingTableId,
+    //     identity_contest_votes: parseInt(jsonFormDeputy.identityContestVotes),
+    //     null_votes: parseInt(jsonFormDeputy.nullVotes),
+    //     appealed_votes: parseInt(jsonFormDeputy.appealedVotes),
+    //     white_votes: parseInt(jsonFormDeputy.whiteVotes),
+    //     total_votes: parseInt(jsonFormDeputy.totalVotes),
+    //     datetime: new Date(),
+    //     electoral_command: parseInt(jsonFormDeputy.electoralCommand),
+    //     type: jsonFormDeputy.type,
+    // })
+    // const partyPidc = Party.build({
+    //     votingtable_id: votingTableId,
+    //     nameParty: jsonFormPidc.nameParty,
+    //     senator: parseInt(jsonFormPidc.votoSenador),
+    //     deputy: parseInt(jsonFormPidc.votoDeputy),
+    // })
+    // const partyCst = Party.build({
+    //     votingtable_id: votingTableId,
+    //     nameParty: jsonFormCst.nameParty,
+    //     senator: parseInt(jsonFormCst.votoSenador),
+    //     deputy: parseInt(jsonFormCst.votoDeputy),
+    // })
+    // const partyJpc = Party.build({
+    //     votingtable_id: votingTableId,
+    //     nameParty: jsonFormJpc.nameParty,
+    //     senator: parseInt(jsonFormJpc.votoSenador),
+    //     deputy: parseInt(jsonFormJpc.votoDeputy),
+    // })
+    // const partyFdt = Party.build({
+    //     votingtable_id: votingTableId,
+    //     nameParty: jsonFormFdt.nameParty,
+    //     senator: parseInt(jsonFormFdt.votoSenador),
+    //     deputy: parseInt(jsonFormFdt.votoDeputy),
+    // })
+    // const partyFizq = Party.build({
+    //     votingtable_id: votingTableId,
+    //     nameParty: jsonFormFizq.nameParty,
+    //     senator: parseInt(jsonFormFizq.votoSenador),
+    //     deputy: parseInt(jsonFormFizq.votoDeputy),
+    // })
+    
 
 
 
-    console.log("votingtable-->> ", votingTable);
-    console.log("votingTableSheetSenator-->> ", votingTableSheetSenator);
-    console.log ("VERIFICAR NAN -------->>>>>", votingTableSheetSenator.identity_contest_votes);
-    console.log("FORM JPC ----->", partyJpc )
 
-    // await votingTable.save();
-    await votingTableSheetSenator.save();
-    await votingTableSheetDeputy.save();
-    await partyPidc.save();
-    await partyCst.save();
-    await partyJpc.save();
-    await partyFdt.save();
-    await partyFizq.save();
+    // console.log("votingtable-->> ", votingTable);
+    // console.log("votingTableSheetSenator-->> ", votingTableSheetSenator);
+    // console.log ("VERIFICAR NAN -------->>>>>", votingTableSheetSenator.identity_contest_votes);
+    // console.log("FORM JPC ----->", partyJpc )
 
-    if (notes.length > 480) {
-        notes = notes.substring(0, 480); //MAX LENGTH HARDC. :p
-    }
+    // // await votingTable.save();
+    // await votingTableSheetSenator.save();
+    // await votingTableSheetDeputy.save();
+    // await partyPidc.save();
+    // await partyCst.save();
+    // await partyJpc.save();
+    // await partyFdt.save();
+    // await partyFizq.save();
+
+    // if (notes.length > 480) {
+    //     notes = notes.substring(0, 480); //MAX LENGTH HARDC. :p
+    // }
 
     //-------------- NO VA
     //if length is 0, it's not valid.

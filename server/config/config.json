@@ -1,6 +1,6 @@
 {
   "development": {
-    "filepath": "./uploads/",
+    "filepath": "server/uploads/",
     "jwtsecret": "ABCDEFGHIJK0123456789",
     "username": "root",
     "password": "secret",
