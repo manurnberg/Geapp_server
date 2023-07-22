@@ -26,7 +26,7 @@ const config = require(__dirname + '/../config/config.json')[env];
 const votingTableController = {};
 
 votingTableController.getVotingTable = async (req, res, next) => {
-    console.log("prueba" + req.payload)
+    
     try {
         console.log(" DNI: " + req.payload.nationalId);
         //need to find the voting table with its voters and citizens for the voting table where the user in session belongs to.
@@ -34,6 +34,9 @@ votingTableController.getVotingTable = async (req, res, next) => {
         const fiscalUser = await User.findOne({
             where: { 'nationalId': req.payload.nationalId },
         })
+        
+
+        console.log(`user voting table ${fiscalUser.table}`)
 
         const usersVotingTable = await VotingTable.findOne(
             {
@@ -41,41 +44,20 @@ votingTableController.getVotingTable = async (req, res, next) => {
                     'id': fiscalUser.table,
                 }
 
-
-
-                // include: [{
-                //     model: Voter,
-                //     include: [
-                //         {
-                //             model: Citizen,
-                //             where: {
-                //                 nationalId: req.payload.nationalId
-                //             }
-                //         }]
-                // }]
             });
-        console.log("test ------->>>>>>>>>" + JSON.stringify(usersVotingTable))
+        console.log("test ------->>>>>>>>>" + JSON.stringify(usersVotingTable.id))
         if (!usersVotingTable) {
             const err = Error('Mesa no encontrada.'); err.status = 422;
             throw err;
         }
-        //hecho_hoy
-        /*   const votingTableId = await User.findOne({
-              where: { "nationalId": req.payload.nationalId}
-  
-          })
-          console.log("prueba" + votingTableId.fiscal)
-          if (votingTableId.table == null) {
-              const err = Error('mesa no encontrada')
-              throw err;
-          } */
-        //fin
+        
         const votingTable = await VotingTable.findOne(
             {
-                where: { "id": usersVotingTable.table },
+                where: { "id": usersVotingTable.id },
                 include: [{ model: Voter, include: [Citizen] }],
                 //order: [[{model: Voter, as: 'voters'},'order', 'ASC']]
             });
+        console.log("selected voting table -->", votingTable)
 
         //sort them by order. cannot do it in sql because col is varchar.
         votingTable.voters.sort((a, b) => { return a.order - b.order });
