@@ -1,0 +1,28 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Angular CLI / Angular
+/dist/
+/*.js
+/*.js.map
+/*.tsbuildinfo
+/coverage/
+/e2e/*.js
+/e2e/*.js.map
+/e2e/*.tsbuildinfo
+
+# IDE/Editor specific
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Miscellaneous
+*.log
+*.lock
+*.bak
+*.swp
+*.tmp
+.DS_Store

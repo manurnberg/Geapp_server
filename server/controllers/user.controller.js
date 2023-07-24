@@ -89,15 +89,7 @@ userController.editUser = async (req, res, next) => {
         const fiscal = req.body.fiscal;
 
 
-
-
         console.log(`Edit user: ${userId} - who is editing?:${req.payload.id}`);
-
-        //I can trust in this 
-        // if (userRole !== 'ADMIN') {
-        //     const err = Error('No tiene privilegios.'); err.status = 403;
-        //     throw err;
-        // }
 
         const userToEdit = await User.findOne({ where: { "id": userId } });
         if (!userToEdit) {
@@ -111,10 +103,6 @@ userController.editUser = async (req, res, next) => {
 
         const userCitizen = await Citizen.findOne({
             where: { "nationalId": userByid.nationalId },
-            // include: [{model: Voter, where: { "isOwner": true },
-            //   include: [{model: VotingTable, where: { "isOpen": true }
-            //   }]
-            // }]
         });
         const voterToEdit = await Voter.findOne({ where: { "citizenId": userCitizen.id } });
         if (!voterToEdit) {
@@ -137,9 +125,6 @@ userController.editUser = async (req, res, next) => {
 
         console.log("user voting table table-->", userVTable.table);
 
-
-
-        //passwordChecker.checkPassword(password);
         let fieldsObjVoter = { fields: ['isOwner'] };
         let fieldsObj = { fields: ['approved'] };
         if (approved !== undefined) {
@@ -188,7 +173,6 @@ userController.editUser = async (req, res, next) => {
 
         console.log("response from edit -->>", response)
 
-        // res.json({ status: 'Usuario actualizado correctamente.'});
         return res.json(response);
     } catch (e) {
         next(e);
