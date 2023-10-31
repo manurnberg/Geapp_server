@@ -21,7 +21,7 @@
     "username": "Geapp_prod_trelew",
     "password": "geapp@trelew",
     "database": "geapp_trelew",
-    "host": "ec2-54-233-90-85.sa-east-1.compute.amazonaws.com",
+    "host": "localhost",
     "dialect": "mysql",
     "operatorsAliases": 0,
     "pool":{

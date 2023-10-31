@@ -109,6 +109,8 @@ userController.editUser = async (req, res, next) => {
             where: { 'id': userId }
         })
 
+        // SE COMENTAN LOS METODOS DE ACTUALIZACION PARA CUANDO EXISTE UN PADRON CARGADO EN BD
+        /*
         const userCitizen = await Citizen.findOne({
             where: { "nationalId": userByid.nationalId },
             // include: [{model: Voter, where: { "isOwner": true },
@@ -171,25 +173,33 @@ userController.editUser = async (req, res, next) => {
             fieldsObjVoter = { fields: ['isOwner'] }
         }
 
-
+        
         if (password !== undefined) {
             console.log("first password", password)
             userToEdit.setPassword(password);
             fieldsObj = { fields: ['salt', 'hash', 'approved', 'fiscal', 'table'] };
         }
+        */
+        if (password !== undefined) {
+            console.log("first password", password)
+            userToEdit.setPassword(password);
+            fieldsObj = { fields: ['salt', 'hash'] };
+        }
 
         await userToEdit.save(fieldsObj);
+        /* SE COMENTAN LOS METODOS DE ACTUALIZACION PARA CUANDO EXISTE UN PADRON CARGADO EN BD
         await voterToEdit.save(fieldsObjVoter);
         const status = { status: 'Usuario actualizado correctamente.' };
+        
         const table = { 'nationalId': userByid.nationalId, 'table': userVTable.table };
         console.log("table print--->>", table)
 
         const response = Object.assign(status, table)
 
         console.log("response from edit -->>", response)
-
-        // res.json({ status: 'Usuario actualizado correctamente.'});
         return res.json(response);
+        */
+        res.json({ status: 'Usuario actualizado correctamente.'});
     } catch (e) {
         next(e);
     }
