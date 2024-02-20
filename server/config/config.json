@@ -18,10 +18,10 @@
   "test": {
     "jwtsecret": "ABCDEFGHIJK0123456789",
     "filepath": "/home/ec2-user/geapp/files/test",
-    "username": "geapp_test",
-    "password": "geapp_TEST_2019",
-    "database": "geapp_test",
-    "host": "localhost",
+    "username": "Geapp_prod_trelew",
+    "password": "geapp@trelew",
+    "database": "geapp_trelew",
+    "host": "ec2-54-233-90-85.sa-east-1.compute.amazonaws.com",
     "dialect": "mysql",
     "operatorsAliases": 0,
     "pool":{
