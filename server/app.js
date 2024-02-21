@@ -77,6 +77,6 @@ app.use((err, req, res, next) => {
 });
 
 //Boot -----------------------------------------------------------------------------
-app.listen(app.get('port', '0.0.0.0'), () => {
+app.listen(app.get('port'),'0.0.0.0', () => {
     console.log('Server on port:', app.get('port'));
 });
