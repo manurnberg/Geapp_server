@@ -8,14 +8,14 @@ const config = require('../config/config.json')[env];
 
 class User extends Sequelize.Model { 
 
-  validPassword = function (password) {
+  validPassword(password) {
     console.log("Password-->> ", password)
     var hash = crypto.pbkdf2Sync(password, this.salt, 10000, 256, 'sha256').toString('hex');
     console.log("hash == hash?", this.hash == hash)
     return this.hash === hash;
   };
   
-  setPassword = function (password) {
+  setPassword(password) {
     console.log("Set password--->>>", password)
     this.salt = crypto.randomBytes(16).toString('hex');
     this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 256, 'sha256').toString('hex')
