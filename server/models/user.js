@@ -22,7 +22,7 @@ class User extends Sequelize.Model {
     this.password = '';
   };
   
-  generateJWT = function () {
+  generateJWT() {
     var today = new Date();
     var exp = new Date(today);
     exp.setDate(today.getDate() + 60);
@@ -37,7 +37,7 @@ class User extends Sequelize.Model {
   };
 
   
-  toAuthJSON = function () {
+  toAuthJSON() {
     return {
       id: this.id,
       nationalId: this.nationalId,
