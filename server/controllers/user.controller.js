@@ -346,15 +346,13 @@ userController.createUser = async (req, res, next) => {
         user.last = citizen.last;
         user.phone = phone;
         user.email = email;
-        user.helpPhone = (config) ? config.value : '+5411111111';
+        user.helpPhone = (config) ? config.value : '+5492974756985';
         user.approved = true;
         user.isFriend = isFriend;
 
-        //passwordChecker.checkPassword(password);
         user.setPassword(password);
 
         await user.save();
-        //throw Error('s'); //TO TEST
 
         res.json(user.toAuthJSON());
     } catch (e) {

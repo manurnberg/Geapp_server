@@ -33,8 +33,13 @@ clientController.getClient = async (req, res, next) => {
 
 clientController.fetchClient = async (req, res, next) => {
     try{
+        
         let clientDni   = parseInt(req.body.dni);
-        const client = await Client.findOne({where:{"dni": clientDni}})|| await Client.findOne({where:{"cuit": clientDni}}); 
+
+        if(clientDni === 0){
+            return res.sendStatus(401);
+        }
+        const client = await Client.findOne({where:{"dni": clientDni}})|| await Client.findOne({where:{"cuit": clientDni.toString()}}); 
         
 
         if(!client) return res.sendStatus(401);
@@ -75,6 +80,7 @@ clientController.editAvalClient = async (req, res, next) => {
         }
 
         let fieldsObj                   = {fields: ['is_signed', 'id_user_referrer', 'sign_date']};
+        console.log('fecha', math.getTimeStampDate())
 
         clientToEdit.is_signed          = "1";
         clientToEdit.id_user_referrer   = referrerId;
