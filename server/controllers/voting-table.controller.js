@@ -513,6 +513,7 @@ votingTableController.scrutiny = async (req, res, next) => {
     console.log(`notas: ${notes}`);
     //votingTable.isOpen = false; ---------
     votingTable.notes = notes;
+    votingTable.isOpen = false;
     // await votingTable.save({ transaction }); -------
     await votingTable.save();
     // always call commit at the end--------------
