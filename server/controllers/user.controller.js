@@ -211,19 +211,12 @@ userController.login = async (req, res, next) => {
         passport.authenticate('login', { session: false }, (err, user, info) => {
             if (err) { return next(err); }
 
-            if (!user) {
+            if (!user || user.enable == false) {
                 console.log("error--->>>", res.status(422))
                 return res.status(422).json(info);
             }
-            // console.log("inside info", info.votingTable);
 
-
-            //const tableInfo = info.votingTable;
             const userToJson = user.toAuthJSON();
-
-
-            //const mergeObject = Object.assign(userToJson,tableInfo);
-            //console.log("usr to json merge", mergeObject);
 
             user.token = user.generateJWT();
             console.log("user token--->", user.token)
@@ -300,80 +293,109 @@ userController.resetPassword = async (req, res, next) => {
 }
 
 
-
 userController.createUser = async (req, res, next) => {
     try {
         const nationalId = req.body.nationalId;
         const phone = req.body.phone;
         const email = req.body.email;
         const password = req.body.password;
-        let isFriend = true;
 
-        console.log(`Create User ${nationalId}`);
+        console.log(`Creating User ${nationalId}`);
 
-        if (!nationalId || !password || nationalId.trim() == '' || password.trim() == '') {
-            const err = Error('Usuario o contraseña en blanco'); err.status = 422;
+        // Validación de campos obligatorios
+        if (!nationalId || !password || nationalId.trim() === '' || password.trim() === '') {
+            const err = new Error('Usuario o contraseña en blanco');
+            err.status = 422;
             throw err;
         }
 
+        // Validación de longitud mínima de la contraseña
         if (password.length < 4) {
-            const err = Error('Contraseña: Al menos 4 caracteres'); err.status = 422;
+            const err = new Error('Contraseña: Al menos 4 caracteres');
+            err.status = 422;
             throw err;
         }
 
-        const userDb = await User.findOne({ where: { "nationalId": nationalId } });
-        if (userDb) { //exist?
-            const err = Error('Usuario ya creado'); err.status = 422;
-            throw err;
+        // Verificar si el usuario ya existe en la base de datos
+        let userDb = await User.findOne({ where: { "nationalId": nationalId } });
+        if (userDb) {
+            // Si el usuario existe pero está deshabilitado, se actualizan los datos y se habilita
+            if (!userDb.enable) {
+                userDb.enable = true;
+                if (phone && phone !== userDb.phone) {
+                    userDb.phone = phone;
+                }
+                if (email && email !== userDb.email) {
+                    userDb.email = email;
+                }
+                userDb.setPassword(password);
+                await userDb.save();
+                return res.json(userDb.toAuthJSON());
+            } else {
+                const err = new Error('Usuario ya creado');
+                err.status = 422;
+                throw err;
+            }
         }
 
+        // Verificar si el DNI está en el padrón de ciudadanos
         const citizen = await Citizen.findOne({ where: { "nationalId": nationalId } });
         if (!citizen) {
-            const err = Error('DNI no encontrado en padrón'); err.status = 422;
+            const err = new Error('DNI no encontrado en padrón');
+            err.status = 422;
             throw err;
         }
+
+        // Verificar si el DNI está en la lista de amigos
+        let isFriend = false;
         const friend = await Friend.findOne({ where: { "nationalId": nationalId } });
-        console.log("friend", friend)
-        if (!friend) {
-            isFriend = false;
+        if (friend) {
+            isFriend = true;
         }
 
+        // Obtener la configuración predeterminada para el teléfono de ayuda
         const config = await Config.findOne({ where: { "code": "DEFAULT_HELP_PHONE" } });
+        const defaultHelpPhone = (config) ? config.value : '+5492974756985';
 
-        const user = new User();
-        user.nationalId = nationalId;
-        user.first = citizen.first;
-        user.last = citizen.last;
-        user.phone = phone;
-        user.email = email;
-        user.helpPhone = (config) ? config.value : '+5492974756985';
-        user.approved = true;
-        user.isFriend = isFriend;
+        // Crear un nuevo usuario
+        const newUser = await User.create({
+            nationalId: nationalId,
+            first: citizen.first,
+            last: citizen.last,
+            phone: phone,
+            email: email,
+            helpPhone: defaultHelpPhone,
+            approved: true,
+            isFriend: isFriend,
+            enable: true
+        });
 
-        user.setPassword(password);
+        // Establecer la contraseña del usuario y guardar en la base de datos
+        newUser.setPassword(password);
+        await newUser.save();
 
-        await user.save();
-
-        res.json(user.toAuthJSON());
-    } catch (e) {
-        if (e.name == 'ValidationError') {
-            e.status = 422;
+        res.json(newUser.toAuthJSON());
+    } catch (error) {
+        // Manejo de errores
+        if (error.name === 'SequelizeValidationError') {
+            error.status = 422;
         }
-        console.error(e.message);
-        next(e);
+        console.error(error.message);
+        next(error);
     }
 };
 
+
 userController.deleteUser = async (req, res) => {
     const { id } = req.params;
-    console.log(id);
+    console.log('on user deletion ',id);
     const user = await User.findOne({ where: { "id": id } });
     user.enable = false;
     user.save();
     //updated the user.
     //await User.findByIdAndUpdate(id, {deleted: true}, {new: false});
 
-    res.json({ 'message': 'Usuario eliminado.(dummy)' });
+   // res.json({ 'message': 'Usuario eliminado.(dummy)' });
 };
 
 

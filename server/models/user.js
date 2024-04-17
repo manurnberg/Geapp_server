@@ -52,6 +52,7 @@ class User extends Sequelize.Model {
       approved: this.approved,
       isOwner: this.isOwner,
       isFriend: this.isFriend,
+      enable: this.enable,
       token: this.generateJWT()
     };
   };
@@ -74,6 +75,7 @@ User.init({
   hash: {type: Sequelize.STRING(550), allowNull:false},
   salt: {type: Sequelize.STRING, allowNull: false},
   isFriend: {type: Sequelize.BOOLEAN, allowNull:true},
+  enable: {type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true}
 }, {
   sequelize,
   //paranoid: true,

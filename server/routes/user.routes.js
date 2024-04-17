@@ -7,7 +7,7 @@ router.get('/:id', auth.required, userController.getUser);
 router.put('/:id', auth.required, userController.editUser);
 router.post('/login', userController.login);
 router.post('/', userController.createUser);
-router.put('/:id', userController.deleteUser);
+router.delete('/:id',auth.required, userController.deleteUser);
 router.post('/reset', userController.sendPasswordReset);
 router.put('/reset/:id',auth.required, userController.resetPassword);
 
