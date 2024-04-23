@@ -116,31 +116,38 @@ userController.editUser = async (req, res, next) => {
             //   }]
             // }]
         });
-        const voterToEdit = await Voter.findOne({ where: { "citizenId": userCitizen.id } });
-        if (!voterToEdit) {
-            const err = Error('Votante no encontrado.'); err.status = 422;
-            throw err;
-        }
 
-        console.log("User citizen-->>", userCitizen.id)
-
-        const userVotingTableId = await Voter.findOne({
-            where: { 'citizenId': userCitizen.id },
-        });
-
-        console.log("user voting table id  --->>", userVotingTableId.votingtableId.toString())
-        const vtId = userVotingTableId.votingtableId;
-
-        const userVTable = await VotingTable.findOne({
-            where: { 'table': vtId },
-        });
-
-        console.log("user voting table table-->", userVTable.table);
+        //TODO: desacoplar usuarios de votantes y mesas de votacion
+        // de momento se comenta todo lo que tiene que ver con votantes y mesas de votacion 
+        // para permitir la edición de usuarios
 
 
+        // const voterToEdit = await Voter.findOne({ where: { "citizenId": userCitizen.id } });
+        // if (!voterToEdit) {
+        //     const err = Error('Votante no encontrado.'); err.status = 422;
+        //     throw err;
+        // }
 
-        //passwordChecker.checkPassword(password);
-        let fieldsObjVoter = { fields: ['isOwner'] };
+        // console.log("User citizen-->>", userCitizen.id)
+
+        // const userVotingTableId = await Voter.findOne({
+        //     where: { 'citizenId': userCitizen.id },
+        // });
+
+        // console.log("user voting table id  --->>", userVotingTableId.votingtableId.toString())
+        // const vtId = userVotingTableId.votingtableId;
+
+        // const userVTable = await VotingTable.findOne({
+        //     where: { 'table': vtId },
+        // });
+
+        // console.log("user voting table table-->", userVTable.table);
+
+
+
+        
+        // let fieldsObjVoter = { fields: ['isOwner'] }; 
+
         let fieldsObj = { fields: ['approved'] };
         if (approved !== undefined) {
             console.log("user approved", approved);
@@ -150,7 +157,7 @@ userController.editUser = async (req, res, next) => {
         if (fiscal !== undefined && fiscal !== false) {
             console.log("user fiscal", fiscal);
             userToEdit.fiscal = fiscal;
-            userToEdit.table = userVTable.table
+            //userToEdit.table = userVTable.table
             fieldsObj = { fields: ['fiscal', 'table'] }
 
 
@@ -160,16 +167,16 @@ userController.editUser = async (req, res, next) => {
             userToEdit.fiscal = null;
             userToEdit.table = null;
             fieldsObj = { fields: ['fiscal', 'table'] };
-            voterToEdit.isOwner = false;
-            fieldsObjVoter = { fields: ['isOwner'] };
+            //voterToEdit.isOwner = false;
+            //fieldsObjVoter = { fields: ['isOwner'] };
         }
 
 
-        if (fiscal) {
-            console.log("fiscal");
-            voterToEdit.isOwner = true
-            fieldsObjVoter = { fields: ['isOwner'] }
-        }
+        // if (fiscal) {
+        //     console.log("fiscal");
+        //     voterToEdit.isOwner = true
+        //     fieldsObjVoter = { fields: ['isOwner'] }
+        // }
 
 
         if (password !== undefined) {
@@ -179,13 +186,13 @@ userController.editUser = async (req, res, next) => {
         }
 
         await userToEdit.save(fieldsObj);
-        await voterToEdit.save(fieldsObjVoter);
+       // await voterToEdit.save(fieldsObjVoter);
         const status = { status: 'Usuario actualizado correctamente.' };
-        const table = { 'nationalId': userByid.nationalId, 'table': userVTable.table };
-        console.log("table print--->>", table)
+        //const table = { 'nationalId': userByid.nationalId, 'table': userVTable.table };
+        //console.log("table print--->>", table)
 
-        const response = Object.assign(status, table)
-
+        //const response = Object.assign(status, table)
+        const response = Object.assign(status);
         console.log("response from edit -->>", response)
 
         // res.json({ status: 'Usuario actualizado correctamente.'});
