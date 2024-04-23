@@ -211,7 +211,7 @@ userController.login = async (req, res, next) => {
         if (!req.body.nationalId || !req.body.password || req.body.nationalId.trim() == '') {
             //return res.status(422).json({errors: {email: "can't be blank"}});
 
-            const err = Error('DNI o contraseña en blanco prueba.'); err.status = 422;
+            const err = Error('DNI o contraseña en blanco prueba.'); err.status = 401;
             throw err;
         }
         const passport = require('passport');
