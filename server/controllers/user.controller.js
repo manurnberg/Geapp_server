@@ -313,6 +313,8 @@ userController.createUser = async (req, res, next) => {
         const email = req.body.email;
         const password = req.body.password;
 
+        console.log('password ',password);
+
         console.log(`Creating User ${nationalId}`);
 
         // Validación de campos obligatorios
@@ -331,7 +333,8 @@ userController.createUser = async (req, res, next) => {
 
         // Verificar si el usuario ya existe en la base de datos
         let userDb = await User.findOne({ where: { "nationalId": nationalId } });
-        if (userDb) {
+
+        if (userDb != null) {
             // Si el usuario existe pero está deshabilitado, se actualizan los datos y se habilita
             if (!userDb.enable) {
                 userDb.enable = true;
