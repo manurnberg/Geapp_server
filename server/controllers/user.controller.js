@@ -203,37 +203,43 @@ userController.editUser = async (req, res, next) => {
 };
 
 userController.login = async (req, res, next) => {
-    console.log("dni request", req.body.nationalId)
-    console.log("pass", req.body.password)
+    console.log("dni request", req.body.nationalId);
+    console.log("pass", req.body.password);
 
     try {
-
         if (!req.body.nationalId || !req.body.password || req.body.nationalId.trim() == '') {
-            //return res.status(422).json({errors: {email: "can't be blank"}});
-
-            const err = Error('DNI o contraseña en blanco prueba.'); err.status = 401;
+            const err = new Error('DNI o contraseña en blanco prueba.');
+            err.status = 401;
             throw err;
         }
+
         const passport = require('passport');
         passport.authenticate('login', { session: false }, (err, user, info) => {
-            if (err) { return next(err); }
+            if (err) { 
+                // Si hay un error en la autenticación, devolver una respuesta con status 401
+                return res.status(401).json({ message: 'Error en la autenticación.' });
+            }
 
-            if (!user || user.enable == false) {
-                console.log("error--->>>", res.status(422))
-                return res.status(422).json(info);
+            if (!user) {
+                // Si el usuario no existe o la contraseña es incorrecta, devolver una respuesta con status 401
+                return res.status(401).json({ message: 'Usuario o contraseña incorrectos.' });
+            }
+
+            if (user.enable === false) {
+                return res.status(422).json({ errors: { enable: "La cuenta está deshabilitada." } }); // Devolver status 422 si la cuenta está deshabilitada
             }
 
             const userToJson = user.toAuthJSON();
-
             user.token = user.generateJWT();
-            console.log("user token--->", user.token)
+            console.log("user token--->", user.token);
             return res.json(userToJson);
         })(req, res, next);
     } catch (e) {
-        next(e);
+        next(e); // Pasar el error al middleware de error
     }
-
 };
+
+
 
 
 userController.sendPasswordReset = async (req, res, next) => {
