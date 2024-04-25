@@ -42,7 +42,9 @@ export class UserService {
     createdAt: new FormControl({value:'', disabled:true}),
     approved: new FormControl(false),
     fiscal: new FormControl(false),
-    table: new FormControl({value: '', disabled:true})
+    table: new FormControl({value: '', disabled:true}),
+    hash: new FormControl(''),
+    salt: new FormControl('')
   });
 
   initFormGroup() {
@@ -59,7 +61,9 @@ export class UserService {
       fiscal: false,
       table: '',
       createdAt: '',
-      approved: false
+      approved: false,
+      hash: '',
+      salt: '',
     });
   }
 
