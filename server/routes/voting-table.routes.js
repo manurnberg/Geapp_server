@@ -4,7 +4,7 @@ const multer = require('multer');
 
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
-
+console.log(config.filepath);
 //file storage destination and file name. We will rename it later.
 const storage = multer.diskStorage({
     destination: function(req, file, cb){

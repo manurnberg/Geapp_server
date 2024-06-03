@@ -217,21 +217,10 @@ votingTableController.replenish = async (req, res, next) => {
 
 
 votingTableController.scrutinyImage = async (req, res, next) => {
+    console.log('inside controller scrutiny image');
     try {
         const userNationalId = req.payload.nationalId;
         const isOwner = req.payload.isOwner;
-        // const effectiveVoters = req.body.effectiveVoters;
-        // const votesInBallotBox = req.body.votesInBallotBox;
-        // const identityContestvotes = req.body.identityContestvotes;
-        // const nullVotes = req.body.nullVotes;
-        // const appealedVotes = req.body.appealedVotes;
-        // const whiteVotes = req.body.whiteVotes;
-        // const totalVotes = req.body.totalVotes;
-        // const testing = req
-        // console.log("formadata on backend-->>", testing);
-
-
-        // console.log(`Scrutiny Image - user:${userNationalId}`);
 
         const user = await User.findOne({
             where: { 'nationalId': userNationalId }
@@ -239,6 +228,8 @@ votingTableController.scrutinyImage = async (req, res, next) => {
 
         const votingTableId = user.table
         const newPathAndName = config.filepath + '/' + votingTableId + dateformat(new Date(), "_yy_mm_dd_HH_MM_ss_") + req.file.originalname;
+       
+        console.log(req.file.path);
         fs.rename(req.file.path, newPathAndName, (err) => {
             if (err) { console.log(err); }
             console.log('Scrutiny file saved.');
@@ -247,27 +238,6 @@ votingTableController.scrutinyImage = async (req, res, next) => {
         const sheetReference = newPathAndName;
         console.log("sheetreference-->", sheetReference);
 
-        // const datetime = new Date();
-
-        // const votingTableSheet = VotingTableSheet.build({
-        //     votingtable_id: votingTableId,
-        //     effective_voters: effectiveVoters,
-        //     votes_in_ballot_box: votesInBallotBox,
-        //     identity_contest_votes: identityContestvotes,
-        //     null_votes: nullVotes,
-        //     appealed_votes: appealedVotes,
-        //     white_votes: whiteVotes,
-        //     total_votes: totalVotes,
-        //     datetime: datetime,
-        //     sheet_reference: referencePathGlobal
-
-
-        // })
-
-
-
-        // await votingTableSheet.save();
-
 
         const votingTable = await VotingTable.findByPk(votingTableId);
         votingTable.scrutinyPath = sheetReference;
@@ -275,6 +245,7 @@ votingTableController.scrutinyImage = async (req, res, next) => {
 
         res.json({ "message": "Imágen cargada con éxito." });
     } catch (e) {
+        console.log('Error loading image: ', e);
         next(e);
     }
 };
@@ -442,82 +413,12 @@ votingTableController.scrutiny = async (req, res, next) => {
         notes = notes.substring(0, 480); //MAX LENGTH HARDC. :p
     }
 
-    //-------------- NO VA
-    //if length is 0, it's not valid.
-    //let isValid = (requestPartiesArr.length > 0) ? true : false;
-    //check all params are positives, if one is not, it's not valid.
-    // requestPartiesArr.forEach(scrutinyPartyObj => {
-    //     if (isNaN(scrutinyPartyObj.qty) || isNaN(scrutinyPartyObj.scrutinyPartyId)
-    //         || scrutinyPartyObj.qty < 0 || scrutinyPartyObj.scrutinyPartyId < 0) {
-    //         isValid = false;
-    //     }
-    // });
-
-    // if(!isValid){
-    //     const err = Error('Hay datos incorrectos.'); err.status = 422;
-    //     throw err;
-    // }
-
-    // const election = await Election.findOne({
-    //     where: { "isActive": true },
-    //     include: [{ model: ScrutinyCategory, include: [ScrutinyParty] }]
-    // });
-
-    // if (!election) {
-    //     const err = Error('Elección no encontrada.'); err.status = 422;
-    //     throw err;
-    // }
-
-    // const userCitizen = await Citizen.findOne({
-    //     where: { "nationalId": userNationalId },
-    //     include: [{
-    //         model: Voter, where: { "isOwner": true },
-    //         include: [{ model: VotingTable, where: { "isOpen": true } }]
-    //     }]
-    // });
-
-    // if (!isOwner || !userCitizen || !userCitizen.voters[0] || !userCitizen.voters[0].votingtable) {
-    //     const err = Error('Mesa cerrada o no encontrada.'); err.status = 422;
-    //     throw err;
-    // }
-
-    //const votingTable = userCitizen.voters[0].votingtable;
-
-
-    //flat all parties in an array.
-    // let scrutiniesArr = [];
-    // election.scrutinycategories.forEach(category => {
-    //     category.scrutinyparties.forEach(party => {
-    //         scrutiniesArr.push({
-    //             scrutinypartyId: party.id,
-    //             votingtableId: votingTable.id,
-    //             quantity: 0
-    //         });
-    //     });
-    // });
-
-    // //update quantity if it's found in the request.
-    // requestPartiesArr.forEach(reqParty => {
-    //     let scrutiny = scrutiniesArr.find(p => { return reqParty.scrutinyPartyId == p.scrutinypartyId });
-    //     if (scrutiny) {
-    //         scrutiny.quantity = reqParty.qty;
-    //     }
-    // });
-
-    //console.log(`Persisting Scrutiny for vtable: ${votingTable.id} and DNI User: ${userNationalId}`);
-    /*scrutiniesArr.forEach(scr => { console.log(`scrutinypartyId: ${scr.scrutinypartyId} : quantity: ${scr.quantity} : votingtableId: ${scr.votingtableId}`);
-    });*/
-    //await Scrutiny.bulkCreate(scrutiniesArr, { transaction });
-    // ----------------------------
-
     console.log(`notas: ${notes}`);
-    //votingTable.isOpen = false; ---------
+
     votingTable.notes = notes;
     votingTable.isOpen = false;
-    // await votingTable.save({ transaction }); -------
+    
     await votingTable.save();
-    // always call commit at the end--------------
-    // await transaction.commit();-------------
 
     res.json({ message: 'Datos cargados. Mesa cerrada.' });
     // } catch (e) {-------------

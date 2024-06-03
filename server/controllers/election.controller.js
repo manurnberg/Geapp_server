@@ -11,6 +11,7 @@ electionController.getElection = async (req, res, next) => {
                 where: {"isActive": true},
                 include: [{ model: ScrutinyCategory, include: [ScrutinyParty] }]
             });
+            console.log(election.isActive);
 
             if(!election){
                 const err = Error('Elección no encontrada.'); err.status = 422;
